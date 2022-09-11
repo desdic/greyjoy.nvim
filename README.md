@@ -106,6 +106,7 @@ example:
 
 ## Roadmap / TODO
 
+* Healthcheck
 * Testing (No unit testing is currently done)
 * Integration with [toggleterm](https://github.com/akinsho/toggleterm.nvim)
 
