@@ -7,11 +7,13 @@ if not ok then
     return
 end
 
+local health = vim.health or require("health")
+
 local M = {}
 
 M.parse = function(fileinfo)
-	local filename = fileinfo.filename
-	local filepath = fileinfo.filepath
+    local filename = fileinfo.filename
+    local filepath = fileinfo.filepath
     local elements = {}
 
     local append_data = function(_, data)
@@ -28,21 +30,30 @@ M.parse = function(fileinfo)
         end
     end
 
-	-- From the bash makefile autocomplete
+    -- From the bash makefile autocomplete
     local command = "make -f ./" .. filename ..
                         " -pRrq |awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($1 !~ \"^[#.]\") {print $1}}' |sort | egrep -v -e '^[^[:alnum:]]'"
     local jobid = vim.fn.jobstart(command, {
         stdout_buffered = true,
         on_stdout = append_data,
         on_stderr = append_data,
-		cwd = filepath,
+        cwd = filepath
     })
 
-	vim.fn.jobwait({jobid}, 10)
+    vim.fn.jobwait({jobid}, 10)
     return elements
+end
+
+M.health = function()
+    if vim.fn.executable("make") == 1 then
+        health.report_ok("`make`: Ok")
+    else
+        health.report_error("`makefile` requires make to be installed")
+    end
 end
 
 return greyjoy.register_extension({
     setup = function(_) end,
+    health = M.health,
     exports = {type = "file", files = {"Makefile"}, parse = M.parse}
 })
