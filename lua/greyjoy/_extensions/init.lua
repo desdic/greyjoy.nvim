@@ -2,6 +2,7 @@ local extensions = {}
 
 extensions._loaded = {}
 extensions._config = {}
+extensions._health = {}
 
 local load_extension = function(name)
     local ok, ext = pcall(require, "greyjoy._extensions." .. name)
@@ -20,6 +21,7 @@ extensions.manager = setmetatable({}, {
         if ext.setup then
 			ext.setup(extensions._config[k] or {})
         end
+		extensions._health[k] = ext.health
 
         return t[k]
     end
@@ -28,11 +30,6 @@ extensions.manager = setmetatable({}, {
 extensions.register = function(mod) return mod end
 
 extensions.load = function(name)
-    local ext = load_extension(name)
- --    if ext.setup then 
-	-- 	ext.setup(extensions._config[name] or {})
-	-- end
-
     return extensions.manager[name]
 end
 
