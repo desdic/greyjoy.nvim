@@ -32,7 +32,7 @@ M.parse = function(fileinfo)
 
     -- From the bash makefile autocomplete
     local command = "make -f ./" .. filename ..
-                        " -pRrq |awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($1 !~ \"^[#.]\") {print $1}}' |sort | egrep -v -e '^[^[:alnum:]]'"
+                        " -pRrq |awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($1 !~ \"^[#.]\") {print $1}}' |sort | grep -E -v -e '^[^[:alnum:]]'"
     local jobid = vim.fn.jobstart(command, {
         stdout_buffered = true,
         on_stdout = append_data,
