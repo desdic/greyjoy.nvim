@@ -88,6 +88,8 @@ use({"desdic/greyjoy.nvim",
 })
 ```
 
+Once installed and reloaded you can use `:Greyjoy` to run it.
+
 ## Breaking changes
 
 Breaking changes will be announced in this [Github Issue](https://github.com/desdic/greyjoy.nvim/issues/1)
