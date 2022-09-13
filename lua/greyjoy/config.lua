@@ -6,6 +6,7 @@ local defaults = {
 	show_command = false, -- show full command when selection
 	show_command_in_output = true, -- Show the command that was running in output
 	patterns = {".git", ".svn"},
+	output_result = "buffer",
 	extensions = {},
 }
 
