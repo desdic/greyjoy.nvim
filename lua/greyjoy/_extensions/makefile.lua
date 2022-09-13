@@ -16,31 +16,30 @@ M.parse = function(fileinfo)
     local filepath = fileinfo.filepath
     local elements = {}
 
-    local append_data = function(_, data)
-        if data then
-            for _, v in ipairs(data) do
-                if v ~= "" then
-                    local elem = {}
-                    elem["name"] = "make " .. v
-                    elem["command"] = {"make", v}
+    local pipe = io.popen("make -pRrq -f ".. filename .." -C " .. filepath .. [[ : 2>/dev/null |
+                awk -F: '/^# Files/,/^# Finished Make data base/ {
+                    if ($1 == "# Not a target") skip = 1;
+                    if ($1 !~ "^[#.\t]") { if (!skip) {if ($1 !~ "^$")print $1}; skip=0 }
+                }' 2>/dev/null]])
 
-                    table.insert(elements, elem)
-                end
-            end
+    if not pipe then return elements end
+
+    local data = pipe:read("*a")
+    io.close(pipe)
+
+    if #data == 0 then return elements end
+
+    local tmp = vim.split(string.sub(data, 1, #data - 1), "\n")
+    for _, v in ipairs(tmp) do
+        if v ~= "" then
+            local elem = {}
+            elem["name"] = "make " .. v
+            elem["command"] = {"make", v}
+
+            table.insert(elements, elem)
         end
     end
 
-    -- From the bash makefile autocomplete
-    local command = "make -f ./" .. filename ..
-                        " -pRrq |awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($1 !~ \"^[#.]\") {print $1}}' |sort | grep -E -v -e '^[^[:alnum:]]'"
-    local jobid = vim.fn.jobstart(command, {
-        stdout_buffered = true,
-        on_stdout = append_data,
-        on_stderr = append_data,
-        cwd = filepath
-    })
-
-    vim.fn.jobwait({jobid}, 10)
     return elements
 end
 
