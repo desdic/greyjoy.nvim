@@ -91,12 +91,12 @@ use({
 
 ## Breaking changes
 
-Breaking changes will be announced at [github](https://github.com/desdic/greyjoy.nvim/issues/1)
+Breaking changes will be announced in this [Github Issue](https://github.com/desdic/greyjoy.nvim/issues/1)
 
 ## Development
 
-* Source hosted at [GitHub][repo]
-* Report issues/questions/feature requests on [GitHub Issues][issues]
+* Source hosted at [github](https://github.com/desdic/greyjoy.nvim)
+* Report issues/questions/feature requests on [GitHub Issues](https://github.com/desdic/greyjoy.nvim/issues/)
 
 Pull requests are very welcome! Make sure your patches are well tested.
 Ideally create a topic branch for every separate change you make. For
