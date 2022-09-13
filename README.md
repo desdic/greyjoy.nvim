@@ -66,7 +66,7 @@ using packer
 
 ```
 use({
-  "https://github.com/desdic/greyjoy.nvim",
+  "desdic/greyjoy.nvim",
   config = function()
     local greyjoy = require("greyjoy")
     greyjoy.setup({
