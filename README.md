@@ -65,8 +65,7 @@ The `vscode_tasks` extension is filebased and will only trigger if `.vscode/task
 using packer
 
 ```
-use({
-  "desdic/greyjoy.nvim",
+use({"desdic/greyjoy.nvim",
   config = function()
     local greyjoy = require("greyjoy")
     greyjoy.setup({
