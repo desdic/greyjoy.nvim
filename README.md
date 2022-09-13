@@ -8,6 +8,8 @@
 
 greyjoy uses vim.ui.select so the settings from (telescope, dressing etc.) menu will reflect it. The above example uses telescope.
 
+Integration with [toggleterm](https://github.com/akinsho/toggleterm.nvim) is also provided.
+
 ## Requirements
 
 Neovim 0.7+ is required
@@ -22,6 +24,7 @@ Neovim 0.7+ is required
   show_command = false, -- show command to run in menu
   show_command_in_output = true, -- show command that was just executed in output
   patterns = {".git", ".svn"}, -- patterns to find the root of the project
+  output_result = "buffer", -- buffer or to toggleterm
   extensions = {}, -- no extensions are loaded per default
 }
 ```
@@ -67,6 +70,7 @@ use({
   config = function()
     local greyjoy = require("greyjoy")
     greyjoy.setup({
+      output_results = "toggleterm",
       extensions = {
         default = {
           commands = {
@@ -107,7 +111,6 @@ example:
 ## Roadmap / TODO
 
 * Testing (No unit testing is currently done)
-* Integration with [toggleterm](https://github.com/akinsho/toggleterm.nvim)
 
 ## Thank you / shout-outs
 
