@@ -162,7 +162,7 @@ greyjoy.run = function(_)
     greyjoy.menu(elements)
 end
 
-vim.api.nvim_create_user_command("Launch", function(args) greyjoy.run(args) end,
+vim.api.nvim_create_user_command("Greyjoy", function(args) greyjoy.run(args) end,
                                  {nargs = "*", desc = "Run greyjoy"})
 
 return greyjoy
