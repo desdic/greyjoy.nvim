@@ -55,7 +55,7 @@ greyjoy.to_toggleterm = function(command)
     end
 
     local commandstr = table.concat(command, " ")
-    toggleterm.exec_command("cmd='" .. string.format("%q", commandstr) .. "'")
+    toggleterm.exec_command("cmd='" .. commandstr .. "'")
 end
 
 greyjoy.to_buffer = function(command)
