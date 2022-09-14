@@ -49,6 +49,11 @@ M.health = function()
     else
         health.report_error("`makefile` requires make to be installed")
     end
+    if vim.fn.executable("awk") == 1 then
+        health.report_ok("`awk`: Ok")
+    else
+        health.report_error("`makefile` requires awk to be installed")
+    end
 end
 
 return greyjoy.register_extension({
