@@ -33,13 +33,13 @@ Neovim 0.7+ is required
 
 Default `greyjoy` does not have any extensions enabled.
 
-### default
+### generic
 
-`default` extension is a global module that does not take into account if we are in a project (found via the patterns). Commands to run can be matched using `filetype`, `filename`, `filepath`
+`generic` extension is a global module that does not take into account if we are in a project (found via the patterns). Commands to run can be matched using `filetype`, `filename`, `filepath`
 
 example:
 ```
-default = {
+generic = {
   commands = {
     ["run test.py"] = {
       command = {"./test.py"},
@@ -54,11 +54,29 @@ The above example is only triggered if a file is of type `python` and the filena
 
 ### makefile
 
-The `makefile` extension is filebased and will only trigger if a `Makefile` is located in the project root. It finds all targets for a `Makefile`
+The `makefile` extension is filebased and will only trigger if a `Makefile` is located in the project root. It finds all targets for a `Makefile`.
+
+requires `make` and `awk` to work.
 
 ### vscode_tasks
 
 The `vscode_tasks` extension is filebased and will only trigger if `.vscode/tasks.json` exists in the project root
+
+### kitchen
+
+The `kitchen` extension is also filebased and looks for `.kitchen.yml` and requires `kitchen` (from chefdk or cinc-workstation) + `awk` to be installed.
+
+This extension has a few config options like which `kitchen` targets you want
+
+Default is:
+
+```
+kitchen = {
+  targets = {"converge", "verify", "test", "destroy"}, -- targets
+  include_all = false, -- include all in list
+}
+
+```
 
 ## Installing
 
@@ -71,7 +89,7 @@ use({"desdic/greyjoy.nvim",
     greyjoy.setup({
       output_results = "toggleterm",
       extensions = {
-        default = {
+        generic = {
           commands = {
             ["run test.py"] = {
               command = {"./test.py"},
@@ -79,11 +97,16 @@ use({"desdic/greyjoy.nvim",
             }
           }
         },
+        kitchen = {
+          targets = {"converge", "verify"},
+          include_all = false,
+        }
       }
     })
-    greyjoy.load_extension("default")
+    greyjoy.load_extension("generic")
     greyjoy.load_extension("vscode_tasks")
     greyjoy.load_extension("makefile")
+    greyjoy.load_extension("kitchen")
   end
 })
 ```
