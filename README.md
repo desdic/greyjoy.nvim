@@ -1,5 +1,7 @@
 # greyjoy.nvim
 
+![Test](https://github.com/desdic/greyjoy.nvim/actions/workflows/ci.yml/badge.svg)
+
 ## What is greyjoy
 
 `greyjoy.nvim` is a pluggable pattern/file based launcher.
@@ -131,10 +133,6 @@ example:
 3. Commit your changes (`git commit -am 'Added some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
-
-## Roadmap / TODO
-
-* Testing (No unit testing is currently done)
 
 ## Thank you / shout-outs
 
