@@ -115,6 +115,10 @@ use({"desdic/greyjoy.nvim",
 
 Once installed and reloaded you can use `:Greyjoy` to run it.
 
+## checkhealth
+
+Once installed make sure you run `:checkhealth greyjoy` to ensure its set up correctly.
+
 ## Breaking changes
 
 Breaking changes will be announced in this [Github Issue](https://github.com/desdic/greyjoy.nvim/issues/1)
