@@ -31,9 +31,7 @@ greyjoy.menu = function(elements)
         table.insert(commands, value["command"])
     end
 
-    vim.ui.select(menuelem, {
-        prompt = "Select a command"
-    }, function(label, idx)
+    vim.ui.select(menuelem, {prompt = "Select a command"}, function(label, idx)
         if label then
             local command = commands[idx]
             if greyjoy.output_results == "toggleterm" then
@@ -97,6 +95,19 @@ greyjoy.to_buffer = function(command)
     })
 end
 
+local add_elements = function(elements, output)
+    if output then
+        for _, elem in pairs(output) do
+            if greyjoy.show_command then
+                elem["name"] = elem["name"] .. " (" ..
+                                   table.concat(elem["command"], " ") .. ")"
+            end
+
+            table.insert(elements, elem)
+        end
+    end
+end
+
 greyjoy.run = function(_)
     -- just return if disabled
     if not greyjoy.enable then return end
@@ -121,17 +132,7 @@ greyjoy.run = function(_)
         -- Do global based
         if v.type == "global" then
             local output = v.parse(fileobj)
-            if output then
-                for _, elem in pairs(output) do
-                    if greyjoy.show_command then
-                        elem["name"] = elem["name"] .. " (" ..
-                                           table.concat(elem["command"], " ") ..
-                                           ")"
-                    end
-
-                    table.insert(elements, elem)
-                end
-            end
+            add_elements(elements, output)
         end
 
         -- Do file based extensions
@@ -141,18 +142,7 @@ greyjoy.run = function(_)
                     if utils.file_exists(rootdir .. "/" .. file) then
                         local fileinfo = {filename = file, filepath = rootdir}
                         local output = v.parse(fileinfo)
-                        if output then
-                            for _, elem in pairs(output) do
-                                if greyjoy.show_command then
-                                    elem["name"] =
-                                        elem["name"] .. " (" ..
-                                            table.concat(elem["command"], " ") ..
-                                            ")"
-                                end
-
-                                table.insert(elements, elem)
-                            end
-                        end
+                        add_elements(elements, output)
                     end
                 end
             end
@@ -162,7 +152,8 @@ greyjoy.run = function(_)
     greyjoy.menu(elements)
 end
 
-vim.api.nvim_create_user_command("Greyjoy", function(args) greyjoy.run(args) end,
+vim.api.nvim_create_user_command("Greyjoy",
+                                 function(args) greyjoy.run(args) end,
                                  {nargs = "*", desc = "Run greyjoy"})
 
 return greyjoy
