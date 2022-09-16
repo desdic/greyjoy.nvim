@@ -32,6 +32,7 @@ M.parse = function(fileobj)
 
                 elem["name"] = k
                 elem["command"] = v.command
+                elem["path"] = filepath
 
                 table.insert(globalcommands, elem)
             end
