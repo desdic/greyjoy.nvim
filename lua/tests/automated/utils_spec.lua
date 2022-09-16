@@ -1,8 +1,6 @@
 local utils = require("greyjoy.utils")
 local eq = assert.are.same
 
-print(vim.inspect(vim.fn.getcwd()))
-
 describe("utils", function()
     it("file exists", function()
         local thisfile = vim.fn.getcwd() ..
