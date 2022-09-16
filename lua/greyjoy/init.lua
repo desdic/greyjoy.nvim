@@ -28,12 +28,14 @@ greyjoy.menu = function(elements)
     local commands = {}
     for _, value in ipairs(elements) do
         table.insert(menuelem, value["name"])
-        table.insert(commands, value["command"])
+        table.insert(commands,
+                     {command = value["command"], path = value["path"]})
     end
 
     vim.ui.select(menuelem, {prompt = "Select a command"}, function(label, idx)
         if label then
             local command = commands[idx]
+
             if greyjoy.output_results == "toggleterm" then
                 greyjoy.to_toggleterm(command)
             else
@@ -46,14 +48,14 @@ end
 greyjoy.to_toggleterm = function(command)
     local ok, toggleterm = pcall(require, "toggleterm")
     if not ok then
-        vim.notify("Unable to require toggleterm, defaulting to buffer")
+        vim.notify("Unable to require toggleterm, please run healthcheck.")
 
-        greyjoy.to_buffer(command)
         return
     end
 
-    local commandstr = table.concat(command, " ")
-    toggleterm.exec_command("cmd='" .. commandstr .. "'")
+    local commandstr = table.concat(command.command, " ")
+    toggleterm.exec_command(
+        "dir='" .. command.path .. "' cmd='" .. commandstr .. "'")
 end
 
 greyjoy.to_buffer = function(command)
@@ -67,7 +69,7 @@ greyjoy.to_buffer = function(command)
 
     if greyjoy.show_command_in_output then
         vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {
-            "output of " .. table.concat(command) .. ":"
+            "output of " .. table.concat(command.command) .. ":"
         })
     end
 
@@ -88,10 +90,11 @@ greyjoy.to_buffer = function(command)
 
     vim.api.nvim_open_win(bufnr, 1, opts)
 
-    vim.fn.jobstart(command, {
+    vim.fn.jobstart(command.command, {
         stdout_buffered = true,
         on_stdout = append_data,
-        on_stderr = append_data
+        on_stderr = append_data,
+		cwd = command.path,
     })
 end
 

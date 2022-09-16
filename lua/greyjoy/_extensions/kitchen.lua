@@ -47,6 +47,7 @@ M.parse = function(fileinfo)
                 local elem = {}
                 elem["name"] = "kitchen " .. target .. " " .. v
                 elem["command"] = {"kitchen", target, v}
+				elem["path"] = filepath
                 table.insert(elements, elem)
             end
         end

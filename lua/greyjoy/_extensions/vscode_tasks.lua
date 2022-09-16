@@ -1,5 +1,4 @@
 -- Parse vscode tasks.json version 2 files
-
 local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then
     vim.notify(
@@ -10,8 +9,10 @@ end
 
 local M = {}
 
-M.parse_v2 = function(content)
-    if not content["tasks"] then return {} end
+M.parse_v2 = function(content, filepath)
+    if not content["tasks"] then
+        return {}
+    end
 
     local filecommands = {}
 
@@ -21,6 +22,7 @@ M.parse_v2 = function(content)
                 local elem = {}
                 elem["name"] = v["label"]
                 elem["command"] = {v["command"]}
+                elem["path"] = filepath
 
                 if v["args"] then
                     for _, value in pairs(v["args"]) do
@@ -36,9 +38,7 @@ M.parse_v2 = function(content)
     return filecommands
 end
 
-M.read = function(fileinfo)
-	local filename = fileinfo.filename
-
+M.read = function(filename)
     local fd = io.open(filename, "r")
     if not fd then return nil end
 
@@ -52,15 +52,18 @@ M.read = function(fileinfo)
     return jsoncontent
 end
 
-M.parse = function(filename)
-    local content = M.read(filename)
+M.parse = function(fileinfo)
+    local filename = fileinfo.filename
+    local filepath = fileinfo.filepath
+
+    local content = M.read(filepath .. "/" .. filename)
     if not content then return {} end
 
-	local major, _, _ = string.match(content["version"], "(%d+)%.(%d+)%.(%d+)")
+    local major, _, _ = string.match(content["version"], "(%d+)%.(%d+)%.(%d+)")
 
-	if tonumber(major) ~= 2 then return {} end
+    if tonumber(major) ~= 2 then return {} end
 
-    return M.parse_v2(content)
+    return M.parse_v2(content, filepath)
 end
 
 return greyjoy.register_extension({
