@@ -32,6 +32,8 @@ greyjoy.menu = function(elements)
                      {command = value["command"], path = value["path"]})
     end
 
+    table.sort(menuelem)
+
     vim.ui.select(menuelem, {prompt = "Select a command"}, function(label, idx)
         if label then
             local command = commands[idx]
@@ -94,7 +96,7 @@ greyjoy.to_buffer = function(command)
         stdout_buffered = true,
         on_stdout = append_data,
         on_stderr = append_data,
-		cwd = command.path,
+        cwd = command.path
     })
 end
 
