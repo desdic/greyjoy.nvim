@@ -28,15 +28,17 @@ greyjoy.menu = function(elements)
     local commands = {}
     for _, value in ipairs(elements) do
         table.insert(menuelem, value["name"])
-        table.insert(commands,
-                     {command = value["command"], path = value["path"]})
+        commands[value["name"]] = {
+            command = value["command"],
+            path = value["path"]
+        }
     end
 
     table.sort(menuelem)
 
-    vim.ui.select(menuelem, {prompt = "Select a command"}, function(label, idx)
+    vim.ui.select(menuelem, {prompt = "Select a command"}, function(label, _)
         if label then
-            local command = commands[idx]
+            local command = commands[label]
 
             if greyjoy.output_results == "toggleterm" then
                 greyjoy.to_toggleterm(command)
@@ -131,7 +133,7 @@ greyjoy.run = function(_)
 
     local elements = {}
 
-    local rootdir = findroot.find(greyjoy.patterns, filepath)
+    local rootdir = findroot.find(greyjoy.patterns, vim.fn.getcwd())
 
     for _, v in pairs(greyjoy.extensions) do
         -- Do global based
