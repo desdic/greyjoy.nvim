@@ -23,12 +23,12 @@ M.parse = function(fileinfo)
     local filepath = fileinfo.filepath
     local elements = {}
 
-    local original_cwd = vim.fn.getcwd()
-    vim.api.nvim_set_current_dir(filepath)
+    local original_cwd = vim.loop.cwd()
+    vim.loop.chdir(filepath)
 
     local pipe = io.popen("kitchen list| awk '(NR>1) {print $1}' 2>/dev/null")
 
-    vim.api.nvim_set_current_dir(original_cwd)
+    vim.loop.chdir(original_cwd)
 
     if not pipe then return elements end
 

@@ -9,7 +9,7 @@ describe("makefile extension", function()
         eq("file", utils.if_nil(makefile.exports.type, false))
         eq({"Makefile"}, utils.if_nil(makefile.exports.files, false))
 
-        local makepath = vim.fn.getcwd() .. "/lua/tests/automated/data"
+        local makepath = vim.loop.cwd() .. "/lua/tests/automated/data"
 
         local fileobj = {}
         fileobj["filename"] = "Makefile"
