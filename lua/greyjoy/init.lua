@@ -124,6 +124,11 @@ greyjoy.run = function(_)
     local filename = utils.basename(fullname)
     local filepath = utils.dirname(fullname)
 
+    filepath = utils.if_nil(filepath, "")
+    if filepath == "" then filepath = vim.loop.cwd() end
+
+    local rootdir = findroot.find(greyjoy.patterns, filepath)
+
     local fileobj = {
         filetype = filetype,
         fullname = fullname,
@@ -132,8 +137,6 @@ greyjoy.run = function(_)
     }
 
     local elements = {}
-
-    local rootdir = findroot.find(greyjoy.patterns, vim.fn.getcwd())
 
     for _, v in pairs(greyjoy.extensions) do
         -- Do global based

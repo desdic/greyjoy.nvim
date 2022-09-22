@@ -9,7 +9,7 @@ describe("makefile extension", function()
         eq("file", utils.if_nil(vstasks.exports.type, false))
         eq({".vscode/tasks.json"}, utils.if_nil(vstasks.exports.files, false))
 
-        local taskpath = vim.fn.getcwd() .. "/lua/tests/automated/data"
+        local taskpath = vim.loop.cwd() .. "/lua/tests/automated/data"
 
         local fileobj = {}
         fileobj["filename"] = ".vscode/tasks.json"
