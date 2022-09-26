@@ -8,6 +8,7 @@ local defaults = {
 	patterns = {".git", ".svn"},
 	output_result = "buffer",
 	extensions = {},
+	last_first = false, -- make sure last option is first on next run, not persistant
 }
 
 -- Set/Change options
