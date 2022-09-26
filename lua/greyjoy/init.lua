@@ -13,6 +13,8 @@ greyjoy.setup = function(options)
     end
 
     _extensions.set_config(config.defaults["extensions"] or {})
+
+    greyjoy.last_element = ""
 end
 
 function greyjoy.load_extension(name) return _extensions.load(name) end
@@ -36,8 +38,20 @@ greyjoy.menu = function(elements)
 
     table.sort(menuelem)
 
+    if utils.if_nil(greyjoy.last_first, false) then
+        if greyjoy.last_element ~= "" then
+            for index, value in ipairs(menuelem) do
+                if value == greyjoy.last_element then
+                    table.remove(menuelem, index)
+                end
+            end
+            table.insert(menuelem, 1, greyjoy.last_element)
+        end
+    end
+
     vim.ui.select(menuelem, {prompt = "Select a command"}, function(label, _)
         if label then
+            greyjoy.last_element = label
             local command = commands[label]
 
             if greyjoy.output_results == "toggleterm" then

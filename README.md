@@ -28,6 +28,7 @@ Neovim 0.7+ is required
   patterns = {".git", ".svn"}, -- patterns to find the root of the project
   output_result = "buffer", -- buffer or to toggleterm
   extensions = {}, -- no extensions are loaded per default
+	last_first = false, -- make sure last option is first on next run, not persistant
 }
 ```
 
@@ -90,6 +91,7 @@ use({"desdic/greyjoy.nvim",
     local greyjoy = require("greyjoy")
     greyjoy.setup({
       output_results = "toggleterm",
+			last_first = true,
       extensions = {
         generic = {
           commands = {
