@@ -14,7 +14,7 @@ greyjoy.setup = function(options)
 
     _extensions.set_config(config.defaults["extensions"] or {})
 
-    greyjoy.last_element = ""
+    greyjoy.last_element = {}
 end
 
 function greyjoy.load_extension(name) return _extensions.load(name) end
@@ -23,7 +23,7 @@ function greyjoy.register_extension(mod) return _extensions.register(mod) end
 
 greyjoy.extensions = require("greyjoy._extensions").manager
 
-greyjoy.menu = function(elements)
+greyjoy.menu = function(rootdir, elements)
     if next(elements) == nil then return end
 
     local menuelem = {}
@@ -37,21 +37,20 @@ greyjoy.menu = function(elements)
     end
 
     table.sort(menuelem)
-
     if utils.if_nil(greyjoy.last_first, false) then
-        if greyjoy.last_element ~= "" then
+        if utils.if_nil(greyjoy.last_element[rootdir], "") ~= "" then
             for index, value in ipairs(menuelem) do
                 if value == greyjoy.last_element then
                     table.remove(menuelem, index)
                 end
             end
-            table.insert(menuelem, 1, greyjoy.last_element)
+            table.insert(menuelem, 1, greyjoy.last_element[rootdir])
         end
     end
 
     vim.ui.select(menuelem, {prompt = "Select a command"}, function(label, _)
         if label then
-            greyjoy.last_element = label
+            greyjoy.last_element[rootdir] = label
             local command = commands[label]
 
             if greyjoy.output_results == "toggleterm" then
@@ -142,6 +141,7 @@ greyjoy.run = function(_)
     if filepath == "" then filepath = vim.loop.cwd() end
 
     local rootdir = findroot.find(greyjoy.patterns, filepath)
+	rootdir = utils.if_nil(rootdir, filepath)
 
     local fileobj = {
         filetype = filetype,
@@ -173,7 +173,7 @@ greyjoy.run = function(_)
         end
     end
 
-    greyjoy.menu(elements)
+    greyjoy.menu(rootdir, elements)
 end
 
 vim.api.nvim_create_user_command("Greyjoy",
