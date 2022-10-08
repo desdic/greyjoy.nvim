@@ -141,7 +141,7 @@ greyjoy.run = function(_)
     if filepath == "" then filepath = vim.loop.cwd() end
 
     local rootdir = findroot.find(greyjoy.patterns, filepath)
-	rootdir = utils.if_nil(rootdir, filepath)
+    rootdir = utils.if_nil(rootdir, filepath)
 
     local fileobj = {
         filetype = filetype,
