@@ -10,9 +10,7 @@ end
 local M = {}
 
 M.parse_v2 = function(content, filepath)
-    if not content["tasks"] then
-        return {}
-    end
+    if not content["tasks"] then return {} end
 
     local filecommands = {}
 
@@ -53,6 +51,11 @@ M.read = function(filename)
 end
 
 M.parse = function(fileinfo)
+    if type(fileinfo) ~= "table" then
+        print("[vscode_tasks] fileinfo must be a table")
+        return {}
+    end
+
     local filename = fileinfo.filename
     local filepath = fileinfo.filepath
 

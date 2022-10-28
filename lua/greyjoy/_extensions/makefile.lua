@@ -12,11 +12,17 @@ local health = vim.health or require("health")
 local M = {}
 
 M.parse = function(fileinfo)
+    if type(fileinfo) ~= "table" then
+        print("[makefile] fileinfo must be a table")
+        return {}
+    end
+
     local filename = fileinfo.filename
     local filepath = fileinfo.filepath
     local elements = {}
 
-    local pipe = io.popen("make -pRrq -f ".. filename .." -C " .. filepath .. [[ : 2>/dev/null |
+    local pipe = io.popen("make -pRrq -f " .. filename .. " -C " .. filepath ..
+                              [[ : 2>/dev/null |
                 awk -F: '/^# Files/,/^# Finished Make data base/ {
                     if ($1 == "# Not a target") skip = 1;
                     if ($1 !~ "^[#.\t]") { if (!skip) {if ($1 !~ "^$")print $1}; skip=0 }
@@ -35,7 +41,7 @@ M.parse = function(fileinfo)
             local elem = {}
             elem["name"] = "make " .. v
             elem["command"] = {"make", v}
-			elem["path"] = filepath
+            elem["path"] = filepath
 
             table.insert(elements, elem)
         end

@@ -20,13 +20,18 @@ local health = vim.health or require("health")
 local M = {}
 
 M.parse = function(fileinfo)
+    if type(fileinfo) ~= "table" then
+        print("[kitchen] fileinfo must be a table")
+        return {}
+    end
+
     local filepath = fileinfo.filepath
     local elements = {}
 
     local original_cwd = vim.loop.cwd()
     vim.loop.chdir(filepath)
 
-    local pipe = io.popen("kitchen list| awk '(NR>1) {print $1}' 2>/dev/null")
+    local pipe = io.popen("kitchen list --bare 2>/dev/null")
 
     vim.loop.chdir(original_cwd)
 
@@ -47,7 +52,7 @@ M.parse = function(fileinfo)
                 local elem = {}
                 elem["name"] = "kitchen " .. target .. " " .. v
                 elem["command"] = {"kitchen", target, v}
-				elem["path"] = filepath
+                elem["path"] = filepath
                 table.insert(elements, elem)
             end
         end
@@ -77,7 +82,7 @@ M.setup = function(config)
         M.config["targets"] = {"converge", "verify", "test", "destroy"}
     end
 
-	M.config.include_all = utils.if_nil(M.config.include_all, false)
+    M.config.include_all = utils.if_nil(M.config.include_all, false)
 end
 
 return greyjoy.register_extension({
