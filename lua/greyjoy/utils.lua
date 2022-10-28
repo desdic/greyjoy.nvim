@@ -11,9 +11,8 @@ M.file_exists = function(filename)
     if f ~= nil then
         io.close(f)
         return true
-    else
-        return false
     end
+    return false
 end
 
 -- get directory name from filename
@@ -21,9 +20,8 @@ M.dirname = function(str)
     if str:match(".-/.-") then
         local name = string.gsub(str, "(.*/)(.*)", "%1")
         return name
-    else
-        return ""
     end
+    return ""
 end
 
 M.is_match = function(v, filename, filetype, filepath)

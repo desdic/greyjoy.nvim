@@ -29,6 +29,7 @@ Neovim 0.7+ is required
   output_result = "buffer", -- buffer or to toggleterm
   extensions = {}, -- no extensions are loaded per default
   last_first = false, -- make sure last option is first on next run, not persistant
+  run_groups = {}, -- no groups configured per default
 }
 ```
 
@@ -81,6 +82,8 @@ kitchen = {
 
 ```
 
+NOTICE: kitchen is quite slow so its possible to create a group without it and only use it when needed
+
 ## Installing
 
 using packer
@@ -91,7 +94,7 @@ use({"desdic/greyjoy.nvim",
     local greyjoy = require("greyjoy")
     greyjoy.setup({
       output_results = "toggleterm",
-			last_first = true,
+      last_first = true,
       extensions = {
         generic = {
           commands = {
@@ -105,6 +108,9 @@ use({"desdic/greyjoy.nvim",
           targets = {"converge", "verify"},
           include_all = false,
         }
+      },
+      run_groups = {
+        fast = {"generic", "makefile"},
       }
     })
     greyjoy.load_extension("generic")
@@ -115,7 +121,9 @@ use({"desdic/greyjoy.nvim",
 })
 ```
 
-Once installed and reloaded you can use `:Greyjoy` to run it.
+Once installed and reloaded you can use `:Greyjoy` to run it or `Greyjoy <pluginname or group name>`.
+
+So in the above example its possible to run the generic and makefile plugin by running `:Greyjoy fast` or if you only wanted to run the makefile plugin you could do `:Greyjoy makefile`
 
 ## Checkhealth
 
@@ -143,3 +151,7 @@ example:
 ## Thank you / shout-outs
 
 * The extension in this module is heavily inspired by the manager in [Telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)
+
+## TODO
+
+* Make documentation on how to create a plugin

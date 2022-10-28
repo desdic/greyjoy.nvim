@@ -17,10 +17,14 @@ end
 local M = {}
 
 M.parse = function(fileobj)
+    if type(fileobj) ~= "table" then
+        print("[generic] fileinfo must be a table")
+        return {}
+    end
 
-	local filename = fileobj.filename
-	local filetype = fileobj.filetype
-	local filepath = fileobj.filepath
+    local filename = fileobj.filename
+    local filetype = fileobj.filetype
+    local filepath = fileobj.filepath
 
     local globalcommands = {}
     if M.config.commands then
