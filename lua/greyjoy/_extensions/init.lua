@@ -17,24 +17,21 @@ end
 extensions.manager = setmetatable({}, {
     __index = function(t, k)
         local ext = load_extension(k)
-        t[k] = ext.exports or {}
-        if ext.setup then
-			ext.setup(extensions._config[k] or {})
-        end
-		extensions._health[k] = ext.health
+        if ext then
+            t[k] = ext.exports or {}
+            if ext.setup then ext.setup(extensions._config[k] or {}) end
+            extensions._health[k] = ext.health
 
-        return t[k]
+            return t[k]
+        end
+        return nil
     end
 })
 
 extensions.register = function(mod) return mod end
 
-extensions.load = function(name)
-    return extensions.manager[name]
-end
+extensions.load = function(name) return extensions.manager[name] end
 
-extensions.set_config = function(config)
-	extensions._config = config or {}
-end
+extensions.set_config = function(config) extensions._config = config or {} end
 
 return extensions
