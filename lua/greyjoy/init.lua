@@ -47,8 +47,11 @@ greyjoy.menu = function(rootdir, elements)
     if next(elements) == nil then return end
 
     local menuelem = {}
+    local menulookup = {}
     local commands = {}
     for _, value in ipairs(elements) do
+        -- keep track of what elements we have
+        menulookup[value["name"]] = true
         table.insert(menuelem, value["name"])
         commands[value["name"]] = {
             command = value["command"],
@@ -64,7 +67,10 @@ greyjoy.menu = function(rootdir, elements)
                     table.remove(menuelem, index)
                 end
             end
-            table.insert(menuelem, 1, greyjoy.last_element[rootdir])
+            -- only add it if its supposed to be on the list
+            if menulookup[greyjoy.last_element[rootdir]] then
+                table.insert(menuelem, 1, greyjoy.last_element[rootdir])
+            end
         end
     end
 
