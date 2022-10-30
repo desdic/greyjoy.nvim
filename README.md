@@ -45,14 +45,27 @@ example:
 ```
 generic = {
   commands = {
-    ["run test.py"] = {
-      command = {"./test.py"},
+    ["run {filename}"] = {
+      command = {"python3", "{filename}"},
       filetype = "python",
       filename = "test.py"
+    },
+    ["run {filename}"] = {
+      command = {"go", "run", "{filename}"},
+      filetype = "go"
     }
+    ...
   }
 },
 ```
+
+The generic module can substitue current variables
+
+| variable | expands to |
+| :--- | :--- |
+| {filename} | current filename |
+| {filepath} | path of current file |
+
 
 The above example is only triggered if a file is of type `python` and the filename matches `test.py`
 
@@ -101,6 +114,10 @@ use({"desdic/greyjoy.nvim",
             ["run test.py"] = {
               command = {"./test.py"},
               filetype = "python"
+            },
+            ["run {filename}"] = {
+              command = {"go", "run", "{filename}"},
+              filetype = "go"
             }
           }
         },

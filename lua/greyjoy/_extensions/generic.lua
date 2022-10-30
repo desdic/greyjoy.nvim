@@ -34,8 +34,22 @@ M.parse = function(fileobj)
             if match then
                 local elem = {}
 
+                -- replace variables in name
+                k = k:gsub("{filename}", filename)
+                k = k:gsub("{filepath}", filepath)
+
+                -- clone command and replace variables
+                local command = {}
+                for index in ipairs(v.command) do
+                    local celem = v.command[index]
+                    celem = celem:gsub("{filename}", filename)
+                    celem = celem:gsub("{filepath}", filepath)
+
+                    table.insert(command, celem)
+                end
+
                 elem["name"] = k
-                elem["command"] = v.command
+                elem["command"] = command
                 elem["path"] = filepath
 
                 table.insert(globalcommands, elem)
