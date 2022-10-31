@@ -159,8 +159,8 @@ greyjoy.run = function(arg)
 
     local filetype = vim.bo.filetype
     local fullname = vim.api.nvim_buf_get_name(0)
-    local filename = utils.basename(fullname)
-    local filepath = utils.dirname(fullname)
+    local filename = vim.fs.basename(fullname)
+    local filepath = vim.fs.dirname(fullname)
     local pluginname = arg or ""
 
     filepath = utils.if_nil(filepath, "")
@@ -181,7 +181,6 @@ greyjoy.run = function(arg)
     for p, v in pairs(greyjoy.extensions) do
         if pluginname == "" or pluginname == p or
             greyjoy.__in_group(pluginname, p) then
-            -- greyjoy.run_group_map[pluginname][p] then
             -- Do global based
             if v.type == "global" then
                 local output = v.parse(fileobj)

@@ -24,7 +24,7 @@ M.parse = function(fileobj)
 
     local filename = fileobj.filename
     local filetype = fileobj.filetype
-    local filepath = fileobj.filepath
+    local filepath = vim.fs.normalize(fileobj.filepath)
 
     local globalcommands = {}
     if M.config.commands then
