@@ -1,12 +1,7 @@
 local M = {}
 
 M.file_exists = function(filename)
-    local f = io.open(filename, "r")
-    if f ~= nil then
-        io.close(f)
-        return true
-    end
-    return false
+    return vim.fn.filereadable(filename) ~= 0
 end
 
 M.is_match = function(v, filename, filetype, filepath)
