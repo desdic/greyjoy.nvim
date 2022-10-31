@@ -159,8 +159,8 @@ greyjoy.run = function(arg)
 
     local filetype = vim.bo.filetype
     local fullname = vim.api.nvim_buf_get_name(0)
-    local filename = utils.basename(fullname)
-    local filepath = utils.dirname(fullname)
+    local filename = vim.fs.basename(fullname)
+    local filepath = vim.fs.dirname(fullname)
     local pluginname = arg or ""
 
     filepath = utils.if_nil(filepath, "")

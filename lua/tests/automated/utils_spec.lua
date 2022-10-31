@@ -10,15 +10,6 @@ describe("utils", function()
         eq(false, utils.file_exists(thisfile .. ".bak"))
     end)
 
-    it("output of basename", function()
-        eq("myfile", utils.basename("/home/myuser/myfile"))
-        eq("my file", utils.basename("/home/my user/my file"))
-        eq("my file", utils.basename("/home/my user/my file"))
-    end)
-    it("output of dirname", function()
-        eq("/home/myuser/", utils.dirname("/home/myuser/myfile"))
-        eq("/home/my user/", utils.dirname("/home/my user/my file"))
-    end)
     it("is_match", function()
         local filename = "test.py"
         local filetype = "python"
