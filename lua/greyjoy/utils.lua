@@ -1,27 +1,7 @@
 local M = {}
 
--- basename of file
-M.basename = function(str)
-    local name = string.gsub(str, "(.*/)(.*)", "%2")
-    return name
-end
-
 M.file_exists = function(filename)
-    local f = io.open(filename, "r")
-    if f ~= nil then
-        io.close(f)
-        return true
-    end
-    return false
-end
-
--- get directory name from filename
-M.dirname = function(str)
-    if str:match(".-/.-") then
-        local name = string.gsub(str, "(.*/)(.*)", "%1")
-        return name
-    end
-    return ""
+    return vim.fn.filereadable(filename) ~= 0
 end
 
 M.is_match = function(v, filename, filetype, filepath)
