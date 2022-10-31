@@ -1,7 +1,6 @@
 local greyjoy = {}
 local config = require("greyjoy.config")
 local utils = require("greyjoy.utils")
-local findroot = require("greyjoy.findroot")
 local _extensions = require("greyjoy._extensions")
 
 -- Override defaults with configuration
@@ -167,7 +166,7 @@ greyjoy.run = function(arg)
     filepath = utils.if_nil(filepath, "")
     if filepath == "" then filepath = vim.loop.cwd() end
 
-    local rootdir = findroot.find(greyjoy.patterns, filepath)
+    local rootdir = vim.fs.dirname(vim.fs.find(greyjoy.patterns, { upward = true })[1])
     rootdir = utils.if_nil(rootdir, filepath)
 
     local fileobj = {
