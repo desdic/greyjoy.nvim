@@ -92,6 +92,21 @@ kitchen = {
   targets = {"converge", "verify", "test", "destroy"}, -- targets
   include_all = false, -- include all in list
 }
+```
+
+### Cargo
+
+The `cargo` extension is filebased and looks for `Cargo.toml` and requires `cargo`
+
+Default is:
+
+```
+cargo = {
+  targets = {
+    {"build"}, {"build", "--release"}, {"check"}, {"clean"},
+    {"update"}
+  }
+}
 
 ```
 
@@ -127,13 +142,14 @@ use({"desdic/greyjoy.nvim",
         }
       },
       run_groups = {
-        fast = {"generic", "makefile"},
+        fast = {"generic", "makefile", "cargo"},
       }
     })
     greyjoy.load_extension("generic")
     greyjoy.load_extension("vscode_tasks")
     greyjoy.load_extension("makefile")
     greyjoy.load_extension("kitchen")
+    greyjoy.load_extension("cargo")
   end
 })
 ```
