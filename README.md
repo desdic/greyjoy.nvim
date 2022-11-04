@@ -37,7 +37,7 @@ Neovim 0.7+ is required
 
 Default `greyjoy` does not have any extensions enabled.
 
-### generic
+### Generic
 
 `generic` extension is a global module that does not take into account if we are in a project (found via the patterns). Commands to run can be matched using `filetype`, `filename`, `filepath`
 
@@ -69,17 +69,17 @@ The generic module can substitue current variables
 
 The above example is only triggered if a file is of type `python` and the filename matches `test.py`
 
-### makefile
+### Makefile
 
 The `makefile` extension is filebased and will only trigger if a `Makefile` is located in the project root. It finds all targets for a `Makefile`.
 
 requires `make` and `awk` to work.
 
-### vscode_tasks
+### Vscode_tasks
 
 The `vscode_tasks` extension is filebased and will only trigger if `.vscode/tasks.json` exists in the project root
 
-### kitchen
+### Kitchen
 
 The `kitchen` extension is also filebased and looks for `.kitchen.yml` and requires `kitchen` (from chefdk or cinc-workstation) + `awk` to be installed.
 
