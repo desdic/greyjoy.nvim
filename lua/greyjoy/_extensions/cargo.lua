@@ -57,7 +57,7 @@ return greyjoy.register_extension({
             M.config = {
                 targets = {
                     {"build"}, {"build", "--release"}, {"check"}, {"clean"},
-                    {"update"}
+                    {"update"}, {"run"}
                 }
             }
         end
