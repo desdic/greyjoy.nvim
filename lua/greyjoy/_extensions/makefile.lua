@@ -1,4 +1,3 @@
--- Parse vscode tasks.json version 2 files
 local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then
     vim.notify(
