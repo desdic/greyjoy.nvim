@@ -94,6 +94,8 @@ kitchen = {
 }
 ```
 
+NOTICE: kitchen is quite slow so its possible to create a group without it and only use it when needed
+
 ### Cargo
 
 The `cargo` extension is filebased and looks for `Cargo.toml` and requires `cargo`
@@ -110,7 +112,6 @@ cargo = {
 
 ```
 
-NOTICE: kitchen is quite slow so its possible to create a group without it and only use it when needed
 
 ## Installing
 
