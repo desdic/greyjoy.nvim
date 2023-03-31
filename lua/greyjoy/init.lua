@@ -118,8 +118,8 @@ greyjoy.to_buffer = function(command)
         })
     end
 
-    local width = 100
-    local height = 50
+    local width = greyjoy.ui.buffer.width
+    local height = greyjoy.ui.buffer.height
 
     local ui = vim.api.nvim_list_uis()[1]
     local opts = {
