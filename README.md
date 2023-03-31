@@ -197,6 +197,10 @@ example:
 
 * The extension in this module is heavily inspired by the manager in [Telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)
 
+## Credits
+
+Thank you @TheSafdarAwan for PR #22
+
 ## TODO
 
 * Make documentation on how to create a plugin
