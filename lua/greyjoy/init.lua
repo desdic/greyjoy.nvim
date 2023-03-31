@@ -96,8 +96,11 @@ greyjoy.to_toggleterm = function(command)
     end
 
     local commandstr = table.concat(command.command, " ")
-    toggleterm.exec_command(
-        "dir='" .. command.path .. "' cmd='" .. commandstr .. "'")
+    local exec_command = "dir='" .. command.path .. "' cmd='" .. commandstr .. "'"
+    if greyjoy.ui.toggleterm.size then
+      exec_command = "size=" .. greyjoy.ui.toggleterm.size .. " " .. exec_command
+    end
+    toggleterm.exec_command(exec_command)
 end
 
 greyjoy.to_buffer = function(command)

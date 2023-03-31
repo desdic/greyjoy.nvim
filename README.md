@@ -20,6 +20,17 @@ Neovim 0.7+ is required
 
 ```
 {
+  ui = {
+    buffer = { -- width and height for the buffer output
+      width = 100,
+      height = 60
+    },
+    toggleterm = { -- by default no size is defined for the toggleterm by
+      -- greyjoy.nvim it will be dependent on the user configured size for toggle
+      -- term.
+      size = nil,
+    }
+  },
   enable = true,
   border = "rounded", -- style for vim.ui.selector
   style = "minimal",
