@@ -1,5 +1,16 @@
 -- Defaults
 local defaults = {
+    ui = {
+      buffer = { -- setting for buffer output
+        width = 100,
+        height = 60,
+      },
+      toggleterm = { -- by default no size is defined for the toggleterm by
+        -- greyjoy.nvim it will be dependent on the user configured size for toggle
+        -- term.
+        size = nil
+      },
+    },
     enable = true, -- enable/disable plugin
     border = "rounded", -- default borders
     style = "minimal", -- default style
