@@ -26,7 +26,7 @@ M.parse = function(fileinfo)
             local cmd = {"cargo"}
 
             for _, option in ipairs(v) do
-                name = name .. option
+                name = name .. " " .. option
                 table.insert(cmd, option)
             end
 
