@@ -22,7 +22,7 @@ M.parse = function(fileinfo)
     if M.config.targets then
         for _, v in ipairs(M.config.targets) do
             local elem = {}
-            local name = "cargo "
+            local name = "cargo"
             local cmd = {"cargo"}
 
             for _, option in ipairs(v) do
