@@ -24,8 +24,9 @@ M.check = function()
 
     for _, installed_ext in ipairs(installed) do
         local extension_healthcheck = extension_module._health[installed_ext]
-        health.report_start(string.format("Greyjoy Extension: `%s`",
-                                          installed_ext))
+        health.report_start(
+            string.format("Greyjoy Extension: `%s`", installed_ext)
+        )
         if extension_healthcheck then
             extension_healthcheck()
         else

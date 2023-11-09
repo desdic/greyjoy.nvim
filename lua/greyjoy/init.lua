@@ -5,10 +5,12 @@ local _extensions = require("greyjoy._extensions")
 
 -- Override defaults with configuration
 greyjoy.setup = function(options)
-    setmetatable(greyjoy, {__newindex = config.set, __index = config.get})
+    setmetatable(greyjoy, { __newindex = config.set, __index = config.get })
 
     if options ~= nil then
-        for k, v in pairs(options) do config.defaults[k] = v end
+        for k, v in pairs(options) do
+            config.defaults[k] = v
+        end
     end
 
     _extensions.set_config(config.defaults["extensions"] or {})
@@ -19,8 +21,8 @@ greyjoy.setup = function(options)
     greyjoy.run_group_map = {}
     if greyjoy.run_groups then
         for group_name, group_plugins in pairs(greyjoy.run_groups) do
-            greyjoy.run_group_map[group_name] =
-                greyjoy.run_group_map[group_name] or {}
+            greyjoy.run_group_map[group_name] = greyjoy.run_group_map[group_name]
+                or {}
 
             for index in ipairs(group_plugins) do
                 greyjoy.run_group_map[group_name][group_plugins[index]] = true
@@ -30,20 +32,30 @@ greyjoy.setup = function(options)
 end
 
 function greyjoy.__in_group(group_name, plugin_name)
-    if not greyjoy.run_group_map[group_name] then return false end
-    if not greyjoy.run_group_map[group_name][plugin_name] then return false end
+    if not greyjoy.run_group_map[group_name] then
+        return false
+    end
+    if not greyjoy.run_group_map[group_name][plugin_name] then
+        return false
+    end
 
     return true
 end
 
-function greyjoy.load_extension(name) return _extensions.load(name) end
+function greyjoy.load_extension(name)
+    return _extensions.load(name)
+end
 
-function greyjoy.register_extension(mod) return _extensions.register(mod) end
+function greyjoy.register_extension(mod)
+    return _extensions.register(mod)
+end
 
 greyjoy.extensions = require("greyjoy._extensions").manager
 
 greyjoy.menu = function(rootdir, elements)
-    if next(elements) == nil then return end
+    if next(elements) == nil then
+        return
+    end
 
     local menuelem = {}
     local menulookup = {}
@@ -54,7 +66,7 @@ greyjoy.menu = function(rootdir, elements)
         table.insert(menuelem, value["name"])
         commands[value["name"]] = {
             command = value["command"],
-            path = value["path"]
+            path = value["path"],
         }
     end
 
@@ -73,7 +85,7 @@ greyjoy.menu = function(rootdir, elements)
         end
     end
 
-    vim.ui.select(menuelem, {prompt = "Select a command"}, function(label, _)
+    vim.ui.select(menuelem, { prompt = "Select a command" }, function(label, _)
         if label then
             greyjoy.last_element[rootdir] = label
             local command = commands[label]
@@ -96,9 +108,16 @@ greyjoy.to_toggleterm = function(command)
     end
 
     local commandstr = table.concat(command.command, " ")
-    local exec_command = "dir='" .. command.path .. "' cmd='" .. commandstr .. "'"
+    local exec_command = "dir='"
+        .. command.path
+        .. "' cmd='"
+        .. commandstr
+        .. "'"
     if greyjoy.ui.toggleterm.size then
-      exec_command = "size=" .. greyjoy.ui.toggleterm.size .. " " .. exec_command
+        exec_command = "size="
+            .. greyjoy.ui.toggleterm.size
+            .. " "
+            .. exec_command
     end
     toggleterm.exec_command(exec_command)
 end
@@ -117,7 +136,7 @@ greyjoy.to_buffer = function(command)
 
     if greyjoy.show_command_in_output then
         vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {
-            "output of " .. table.concat(command.command, " ") .. ":"
+            "output of " .. table.concat(command.command, " ") .. ":",
         })
     end
 
@@ -133,7 +152,7 @@ greyjoy.to_buffer = function(command)
         row = (ui.height - height) / 2,
         style = greyjoy.style,
         border = greyjoy.border,
-        focusable = true
+        focusable = true,
     }
 
     vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
@@ -143,17 +162,21 @@ greyjoy.to_buffer = function(command)
         stdout_buffered = true,
         on_stdout = append_data,
         on_stderr = append_data,
-        cwd = command.path
+        cwd = command.path,
     })
 end
 
 local add_elements = function(elements, output)
-    if not output then return end
+    if not output then
+        return
+    end
 
     for _, elem in pairs(output) do
         if greyjoy.show_command then
-            elem["name"] = elem["name"] .. " (" ..
-                               table.concat(elem["command"], " ") .. ")"
+            elem["name"] = elem["name"]
+                .. " ("
+                .. table.concat(elem["command"], " ")
+                .. ")"
         end
 
         table.insert(elements, elem)
@@ -162,7 +185,9 @@ end
 
 greyjoy.run = function(arg)
     -- just return if disabled
-    if not greyjoy.enable then return end
+    if not greyjoy.enable then
+        return
+    end
 
     local filetype = vim.bo.filetype
     local fullname = vim.api.nvim_buf_get_name(0)
@@ -171,23 +196,29 @@ greyjoy.run = function(arg)
     local pluginname = arg or ""
 
     filepath = utils.if_nil(filepath, "")
-    if filepath == "" then filepath = vim.loop.cwd() end
+    if filepath == "" then
+        filepath = vim.loop.cwd()
+    end
 
-    local rootdir = vim.fs.dirname(vim.fs.find(greyjoy.patterns, { upward = true })[1])
+    local rootdir =
+        vim.fs.dirname(vim.fs.find(greyjoy.patterns, { upward = true })[1])
     rootdir = utils.if_nil(rootdir, filepath)
 
     local fileobj = {
         filetype = filetype,
         fullname = fullname,
         filename = filename,
-        filepath = filepath
+        filepath = filepath,
     }
 
     local elements = {}
 
     for p, v in pairs(greyjoy.extensions) do
-        if pluginname == "" or pluginname == p or
-            greyjoy.__in_group(pluginname, p) then
+        if
+            pluginname == ""
+            or pluginname == p
+            or greyjoy.__in_group(pluginname, p)
+        then
             -- greyjoy.run_group_map[pluginname][p] then
             -- Do global based
             if v.type == "global" then
@@ -201,7 +232,7 @@ greyjoy.run = function(arg)
                         if utils.file_exists(rootdir .. "/" .. file) then
                             local fileinfo = {
                                 filename = file,
-                                filepath = rootdir
+                                filepath = rootdir,
                             }
                             local output = v.parse(fileinfo)
                             add_elements(elements, output)
@@ -215,8 +246,8 @@ greyjoy.run = function(arg)
     greyjoy.menu(rootdir, elements)
 end
 
-vim.api.nvim_create_user_command("Greyjoy",
-                                 function(args) greyjoy.run(args.args) end,
-                                 {nargs = "*", desc = "Run greyjoy"})
+vim.api.nvim_create_user_command("Greyjoy", function(args)
+    greyjoy.run(args.args)
+end, { nargs = "*", desc = "Run greyjoy" })
 
 return greyjoy

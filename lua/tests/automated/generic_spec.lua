@@ -10,17 +10,17 @@ describe("makefile extension", function()
         local fileobj = {
             filename = "test.py",
             filetype = "python",
-            filepath = "/home/example"
+            filepath = "/home/example",
         }
 
         local config = {
             commands = {
                 ["run test.py"] = {
-                    command = {"./test.py"},
+                    command = { "./test.py" },
                     filetype = "python",
-                    filename = "test.py"
-                }
-            }
+                    filename = "test.py",
+                },
+            },
         }
 
         generic.setup(config)
@@ -30,8 +30,8 @@ describe("makefile extension", function()
             {
                 name = "run test.py",
                 path = "/home/example",
-                command = "./test.py"
-            }
+                command = "./test.py",
+            },
         }) do
             local found = false
 
@@ -46,7 +46,9 @@ describe("makefile extension", function()
                 end
             end
 
-            it(case.name, function() eq(true, found) end)
+            it(case.name, function()
+                eq(true, found)
+            end)
         end
     end)
 end)

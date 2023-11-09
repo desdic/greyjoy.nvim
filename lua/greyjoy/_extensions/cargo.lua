@@ -2,7 +2,9 @@ local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then
     vim.notify(
         "This plugin requires greyjoy.nvim (https://github.com/desdic/greyjoy.nvim)",
-        vim.lsp.log_levels.ERROR, {title = "Plugin error"})
+        vim.lsp.log_levels.ERROR,
+        { title = "Plugin error" }
+    )
     return
 end
 
@@ -23,7 +25,7 @@ M.parse = function(fileinfo)
         for _, v in ipairs(M.config.targets) do
             local elem = {}
             local name = "cargo"
-            local cmd = {"cargo"}
+            local cmd = { "cargo" }
 
             for _, option in ipairs(v) do
                 name = name .. " " .. option
@@ -56,12 +58,16 @@ return greyjoy.register_extension({
         if not M.config.targets then
             M.config = {
                 targets = {
-                    {"build"}, {"build", "--release"}, {"check"}, {"clean"},
-                    {"update"}, {"run"}
-                }
+                    { "build" },
+                    { "build", "--release" },
+                    { "check" },
+                    { "clean" },
+                    { "update" },
+                    { "run" },
+                },
             }
         end
     end,
     health = M.health,
-    exports = {type = "file", files = {"Cargo.toml"}, parse = M.parse}
+    exports = { type = "file", files = { "Cargo.toml" }, parse = M.parse },
 })

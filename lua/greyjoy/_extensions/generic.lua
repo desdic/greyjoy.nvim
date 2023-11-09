@@ -2,7 +2,9 @@ local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then
     vim.notify(
         "This plugin requires greyjoy.nvim (https://github.com/desdic/greyjoy.nvim)",
-        vim.lsp.log_levels.ERROR, {title = "Plugin error"})
+        vim.lsp.log_levels.ERROR,
+        { title = "Plugin error" }
+    )
     return
 end
 
@@ -10,7 +12,9 @@ local uok, utils = pcall(require, "greyjoy.utils")
 if not uok then
     vim.notify(
         "This plugin requires greyjoy.nvim (https://github.com/desdic/greyjoy.nvim)",
-        vim.lsp.log_levels.ERROR, {title = "Plugin error"})
+        vim.lsp.log_levels.ERROR,
+        { title = "Plugin error" }
+    )
     return
 end
 
@@ -60,6 +64,8 @@ M.parse = function(fileobj)
 end
 
 return greyjoy.register_extension({
-    setup = function(config) M.config = config end,
-    exports = {type = "global", parse = M.parse}
+    setup = function(config)
+        M.config = config
+    end,
+    exports = { type = "global", parse = M.parse },
 })

@@ -3,14 +3,18 @@ local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then
     vim.notify(
         "This plugin requires greyjoy.nvim (https://github.com/desdic/greyjoy.nvim)",
-        vim.lsp.log_levels.ERROR, {title = "Plugin error"})
+        vim.lsp.log_levels.ERROR,
+        { title = "Plugin error" }
+    )
     return
 end
 
 local M = {}
 
 M.parse_v2 = function(content, filepath)
-    if not content["tasks"] then return {} end
+    if not content["tasks"] then
+        return {}
+    end
 
     local filecommands = {}
 
@@ -19,7 +23,7 @@ M.parse_v2 = function(content, filepath)
             if v["label"] and v["command"] then
                 local elem = {}
                 elem["name"] = v["label"]
-                elem["command"] = {v["command"]}
+                elem["command"] = { v["command"] }
                 elem["path"] = filepath
 
                 if v["args"] then
@@ -38,14 +42,18 @@ end
 
 M.read = function(filename)
     local fd = io.open(filename, "r")
-    if not fd then return nil end
+    if not fd then
+        return nil
+    end
 
     local content = fd:read("*a")
 
     fd:close()
 
     local jsoncontent = vim.fn.json_decode(content)
-    if not jsoncontent then return nil end
+    if not jsoncontent then
+        return nil
+    end
 
     return jsoncontent
 end
@@ -60,16 +68,20 @@ M.parse = function(fileinfo)
     local filepath = fileinfo.filepath
 
     local content = M.read(filepath .. "/" .. filename)
-    if not content then return {} end
+    if not content then
+        return {}
+    end
 
     local major, _, _ = string.match(content["version"], "(%d+)%.(%d+)%.(%d+)")
 
-    if tonumber(major) ~= 2 then return {} end
+    if tonumber(major) ~= 2 then
+        return {}
+    end
 
     return M.parse_v2(content, filepath)
 end
 
 return greyjoy.register_extension({
     setup = function(_) end,
-    exports = {type = "file", files = {".vscode/tasks.json"}, parse = M.parse}
+    exports = { type = "file", files = { ".vscode/tasks.json" }, parse = M.parse },
 })

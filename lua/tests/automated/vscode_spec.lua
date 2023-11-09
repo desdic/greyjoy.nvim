@@ -7,7 +7,7 @@ describe("makefile extension", function()
 
         eq(vstasks.exports, utils.if_nil(vstasks.exports, false))
         eq("file", utils.if_nil(vstasks.exports.type, false))
-        eq({".vscode/tasks.json"}, utils.if_nil(vstasks.exports.files, false))
+        eq({ ".vscode/tasks.json" }, utils.if_nil(vstasks.exports.files, false))
 
         local taskpath = vim.loop.cwd() .. "/lua/tests/automated/data"
 
@@ -18,7 +18,7 @@ describe("makefile extension", function()
         local res = vstasks.exports.parse(fileobj)
 
         for _, case in ipairs({
-            {name = "echo", path = taskpath, command = "echo hello"},
+            { name = "echo", path = taskpath, command = "echo hello" },
         }) do
             local found = false
 
@@ -33,7 +33,9 @@ describe("makefile extension", function()
                 end
             end
 
-            it(case.name, function() eq(true, found) end)
+            it(case.name, function()
+                eq(true, found)
+            end)
         end
     end)
 end)
