@@ -22,8 +22,8 @@ Neovim 0.8+ is required
 {
   ui = {
     buffer = { -- width and height for the buffer output
-      width = 100,
-      height = 50
+      width = math.ceil(math.min(vim.o.columns, math.max(80, vim.o.columns - 20))),
+      height = math.ceil(math.min(vim.o.lines, math.max(20, vim.o.lines - 10))),
     },
     toggleterm = { -- by default no size is defined for the toggleterm by
       -- greyjoy.nvim it will be dependent on the user configured size for toggle
