@@ -7,7 +7,7 @@ describe("makefile extension", function()
 
         eq(makefile.exports, utils.if_nil(makefile.exports, false))
         eq("file", utils.if_nil(makefile.exports.type, false))
-        eq({"Makefile"}, utils.if_nil(makefile.exports.files, false))
+        eq({ "Makefile" }, utils.if_nil(makefile.exports.files, false))
 
         local makepath = vim.loop.cwd() .. "/lua/tests/automated/data"
 
@@ -17,8 +17,8 @@ describe("makefile extension", function()
 
         local res = makefile.exports.parse(fileobj)
         for _, case in ipairs({
-            {name = "make all", path = makepath, command = "make all"},
-            {name = "make build", path = makepath, command = "make build"}
+            { name = "make all", path = makepath, command = "make all" },
+            { name = "make build", path = makepath, command = "make build" },
         }) do
             local found = false
 
@@ -33,7 +33,9 @@ describe("makefile extension", function()
                 end
             end
 
-            it(case.name, function() eq(true, found) end)
+            it(case.name, function()
+                eq(true, found)
+            end)
         end
     end)
 end)
