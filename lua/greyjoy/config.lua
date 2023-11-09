@@ -3,7 +3,7 @@ local defaults = {
     ui = {
       buffer = { -- setting for buffer output
         width = 100,
-        height = 60,
+        height = 50,
       },
       toggleterm = { -- by default no size is defined for the toggleterm by
         -- greyjoy.nvim it will be dependent on the user configured size for toggle
