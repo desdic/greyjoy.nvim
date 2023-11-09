@@ -83,5 +83,9 @@ end
 
 return greyjoy.register_extension({
     setup = function(_) end,
-    exports = { type = "file", files = { ".vscode/tasks.json" }, parse = M.parse },
+    exports = {
+        type = "file",
+        files = { ".vscode/tasks.json" },
+        parse = M.parse,
+    },
 })
