@@ -64,7 +64,7 @@ end
 
 M.health = function()
     local cmd = M.config["cmd"]:match("%S+")
-    local basename = string.gsub(cmd[1], "(.*/)(.*)", "%2")
+    local basename = string.gsub(cmd, "(.*/)(.*)", "%2")
     if vim.fn.executable(basename) == 1 then
         health.report_ok("`" .. basename .. "`: Ok")
     else
