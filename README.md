@@ -14,7 +14,7 @@ Integration with [toggleterm](https://github.com/akinsho/toggleterm.nvim) is als
 
 ## Requirements
 
-Neovim 0.8+ is required
+Neovim 0.9+ is required
 
 ## Default settings
 
@@ -123,6 +123,18 @@ cargo = {
 
 ```
 
+### Docker_compose
+
+The `docker_compose` extension is filebased and looks for `docker-compose.yml` and requires `docker-compose`/`docker compose`
+
+Default is:
+
+```
+docker_compose = { 
+   cmd = "/usr/bin/docker-compose", -- can be replaced with /usr/bin/docker compose
+   shell = "/bin/bash"
+}
+```
 
 ## Installing
 
@@ -162,6 +174,7 @@ use({"desdic/greyjoy.nvim",
     greyjoy.load_extension("makefile")
     greyjoy.load_extension("kitchen")
     greyjoy.load_extension("cargo")
+    greyjoy.load_extension("docker_compose")
   end
 })
 ```
