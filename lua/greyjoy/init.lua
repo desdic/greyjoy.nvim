@@ -67,6 +67,8 @@ greyjoy.menu = function(rootdir, elements)
         commands[value["name"]] = {
             command = value["command"],
             path = value["path"],
+            group_id = value["group_id"],
+            plugin = value["plugin"],
         }
     end
 
@@ -107,19 +109,37 @@ greyjoy.to_toggleterm = function(command)
         return
     end
 
+    local count = 1 -- keep old behaviour and have all run in same terminal window
+    local group_type = type(config.defaults["toggleterm"]["default_group_id"])
+    if group_type == "number" then
+        count = config.defaults["toggleterm"]["default_group_id"]
+    elseif group_type == "function" then
+        count = config.defaults["toggleterm"]["default_group_id"](command.plugin)
+    end
+
+    if command.group_id ~= nil then
+        group_type = type(command.group_id)
+        if group_type == "number" then
+            count = command.group_id
+        elseif group_type == "function" then
+            count = command.group_id(command.plugin)
+        end
+    end
+
     local commandstr = table.concat(command.command, " ")
     local exec_command = "dir='"
         .. command.path
         .. "' cmd='"
         .. commandstr
         .. "'"
+        .. " name='" .. commandstr .. "'"
     if greyjoy.ui.toggleterm.size then
         exec_command = "size="
             .. greyjoy.ui.toggleterm.size
             .. " "
             .. exec_command
     end
-    toggleterm.exec_command(exec_command)
+    toggleterm.exec_command(exec_command, count)
 end
 
 greyjoy.to_buffer = function(command)

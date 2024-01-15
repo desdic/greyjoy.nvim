@@ -15,6 +15,13 @@ local defaults = {
             size = nil,
         },
     },
+    toggleterm = {
+        -- default_group_id can be a number or a function that takes a string as parameter.
+        -- The string passed as parameter is the name of the plugin so its possible to do logic based
+        -- on plugin name and function should always return a number like:
+        -- default_group_id = function(plugin) return 1 end
+        default_group_id = 1,
+    },
     enable = true, -- enable/disable plugin
     border = "rounded", -- default borders
     style = "minimal", -- default style
