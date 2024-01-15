@@ -35,6 +35,7 @@ M.parse = function(fileinfo)
             elem["name"] = name
             elem["command"] = cmd
             elem["path"] = filepath
+            elem["plugin"] = "cargo"
 
             table.insert(elements, elem)
         end

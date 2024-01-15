@@ -25,6 +25,7 @@ M.parse_v2 = function(content, filepath)
                 elem["name"] = v["label"]
                 elem["command"] = { v["command"] }
                 elem["path"] = filepath
+                elem["plugin"] = "vscode_tasks"
 
                 if v["args"] then
                     for _, value in pairs(v["args"]) do

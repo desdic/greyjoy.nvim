@@ -54,6 +54,11 @@ M.parse = function(fileinfo)
             elem["name"] = "docker-compose exec " .. v
             elem["command"] = { M.config["cmd"], "exec",  "-it", v,  M.config["shell"] }
             elem["path"] = filepath
+            elem["plugin"] = "docker_compose"
+
+            if M.config["group_id"] then
+                elem["group_id"] = M.config["group_id"]
+            end
 
             table.insert(elements, elem)
         end

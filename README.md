@@ -31,6 +31,13 @@ Neovim 0.9+ is required
       size = nil,
     }
   },
+  toggleterm = {
+      -- default_group_id can be a number or a function that takes a string as parameter.
+      -- The string passed as parameter is the name of the plugin so its possible to do logic based
+      -- on plugin name and function should always return a number like:
+      -- default_group_id = function(plugin) return 1 end
+      default_group_id = 1,
+  },
   enable = true,
   border = "rounded", -- style for vim.ui.selector
   style = "minimal",
@@ -43,6 +50,18 @@ Neovim 0.9+ is required
   run_groups = {}, -- no groups configured per default
 }
 ```
+
+Per default all plugins use the same terminal but this behaviour (if you are using `toggleterm`) can be overridden by either grouping the plugins to a specific `group_id` or create a function to assign number based on plugin name.
+
+So if you want all plugins to run under id `id` (default) but the `docker_compose` you would like to have another group you can configure it via
+
+```
+  extensions = {
+    docker_compose = { group_id = 2 },
+  },
+```
+
+and now all docker compose's exec is running in a secondary terminal (group_id 2) and all the others in group_id 1
 
 ## Extensions
 

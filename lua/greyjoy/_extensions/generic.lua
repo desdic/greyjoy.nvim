@@ -55,6 +55,7 @@ M.parse = function(fileobj)
                 elem["name"] = k
                 elem["command"] = command
                 elem["path"] = filepath
+                elem["plugin"] = "generic"
 
                 table.insert(globalcommands, elem)
             end

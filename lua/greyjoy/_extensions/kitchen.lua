@@ -63,6 +63,7 @@ M.parse = function(fileinfo)
                 elem["name"] = "kitchen " .. target .. " " .. v
                 elem["command"] = { "kitchen", target, v }
                 elem["path"] = filepath
+                elem["plugin"] = "kitchen"
                 table.insert(elements, elem)
             end
         end
