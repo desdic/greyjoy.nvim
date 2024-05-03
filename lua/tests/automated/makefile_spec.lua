@@ -4,12 +4,13 @@ local eq = assert.are.same
 describe("makefile extension", function()
     it("runs make", function()
         local makefile = require("greyjoy._extensions.makefile")
+        local uv = vim.loop or vim.uv
 
         eq(makefile.exports, utils.if_nil(makefile.exports, false))
         eq("file", utils.if_nil(makefile.exports.type, false))
         eq({ "Makefile" }, utils.if_nil(makefile.exports.files, false))
 
-        local makepath = vim.loop.cwd() .. "/lua/tests/automated/data"
+        local makepath = uv.cwd() .. "/lua/tests/automated/data"
 
         local fileobj = {}
         fileobj["filename"] = "Makefile"

@@ -22,6 +22,7 @@ end
 local health = vim.health or require("health")
 
 local M = {}
+local uv = vim.loop or vim.uv
 
 M.parse = function(fileinfo)
     if type(fileinfo) ~= "table" then
@@ -32,12 +33,12 @@ M.parse = function(fileinfo)
     local filepath = fileinfo.filepath
     local elements = {}
 
-    local original_cwd = vim.loop.cwd()
-    vim.loop.chdir(filepath)
+    local original_cwd = uv.cwd()
+    uv.chdir(filepath)
 
     local pipe = io.popen("kitchen list --bare 2>/dev/null")
 
-    vim.loop.chdir(original_cwd)
+    uv.chdir(original_cwd)
 
     if not pipe then
         return elements
