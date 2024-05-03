@@ -3,13 +3,14 @@ local eq = assert.are.same
 
 describe("makefile extension", function()
     it("runs make", function()
+        local uv = vim.loop or vim.uv
         local vstasks = require("greyjoy._extensions.vscode_tasks")
 
         eq(vstasks.exports, utils.if_nil(vstasks.exports, false))
         eq("file", utils.if_nil(vstasks.exports.type, false))
         eq({ ".vscode/tasks.json" }, utils.if_nil(vstasks.exports.files, false))
 
-        local taskpath = vim.loop.cwd() .. "/lua/tests/automated/data"
+        local taskpath = uv.cwd() .. "/lua/tests/automated/data"
 
         local fileobj = {}
         fileobj["filename"] = ".vscode/tasks.json"

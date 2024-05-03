@@ -3,7 +3,8 @@ local eq = assert.are.same
 
 describe("utils", function()
     it("file exists", function()
-        local thisfile = vim.loop.cwd() .. "/lua/tests/automated/utils_spec.lua"
+        local uv = vim.loop or vim.uv
+        local thisfile = uv.cwd() .. "/lua/tests/automated/utils_spec.lua"
 
         eq(true, utils.file_exists(thisfile))
         eq(false, utils.file_exists(thisfile .. ".bak"))

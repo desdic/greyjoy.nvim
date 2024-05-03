@@ -114,7 +114,8 @@ greyjoy.to_toggleterm = function(command)
     if group_type == "number" then
         count = config.defaults["toggleterm"]["default_group_id"]
     elseif group_type == "function" then
-        count = config.defaults["toggleterm"]["default_group_id"](command.plugin)
+        count =
+            config.defaults["toggleterm"]["default_group_id"](command.plugin)
     end
 
     if command.group_id ~= nil then
@@ -132,7 +133,9 @@ greyjoy.to_toggleterm = function(command)
         .. "' cmd='"
         .. commandstr
         .. "'"
-        .. " name='" .. commandstr .. "'"
+        .. " name='"
+        .. commandstr
+        .. "'"
     if greyjoy.ui.toggleterm.size then
         exec_command = "size="
             .. greyjoy.ui.toggleterm.size
@@ -214,10 +217,11 @@ greyjoy.run = function(arg)
     local filename = vim.fs.basename(fullname)
     local filepath = vim.fs.dirname(fullname)
     local pluginname = arg or ""
+    local uv = vim.loop or vim.uv
 
     filepath = utils.if_nil(filepath, "")
     if filepath == "" then
-        filepath = vim.loop.cwd()
+        filepath = uv.cwd()
     end
 
     local rootdir =
