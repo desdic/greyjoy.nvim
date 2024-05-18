@@ -2,7 +2,7 @@ local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then
     vim.notify(
         "This plugin requires greyjoy.nvim (https://github.com/desdic/greyjoy.nvim)",
-        vim.lsp.log_levels.ERROR,
+        vim.log.levels.ERROR,
         { title = "Plugin error" }
     )
     return
@@ -12,7 +12,7 @@ local uok, utils = pcall(require, "greyjoy.utils")
 if not uok then
     vim.notify(
         "This plugin requires greyjoy.nvim (https://github.com/desdic/greyjoy.nvim)",
-        vim.lsp.log_levels.ERROR,
+        vim.log.levels.ERROR,
         { title = "Plugin error" }
     )
     return
