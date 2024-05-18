@@ -1,20 +1,20 @@
-local health = vim.health or require("health")
+local health = vim.health
 local extension_module = require("greyjoy._extensions")
 local extension_info = require("greyjoy").extensions
 
 local M = {}
 
 M.check = function()
-    health.report_start("Checking for optional plugins")
+    health.start("Checking for optional plugins")
 
     local ok, _ = pcall(require, "toggleterm")
     if not ok then
-        health.report_warn("`toggleterm` not installed")
+        health.warn("`toggleterm` not installed")
     else
-        health.report_ok("`toggleterm` installed")
+        health.ok("`toggleterm` installed")
     end
 
-    health.report_start("===== Installed extensions =====")
+    health.start("===== Installed extensions =====")
 
     local installed = {}
     for extension_name, _ in pairs(extension_info) do
@@ -24,13 +24,11 @@ M.check = function()
 
     for _, installed_ext in ipairs(installed) do
         local extension_healthcheck = extension_module._health[installed_ext]
-        health.report_start(
-            string.format("Greyjoy Extension: `%s`", installed_ext)
-        )
+        health.start(string.format("Greyjoy Extension: `%s`", installed_ext))
         if extension_healthcheck then
             extension_healthcheck()
         else
-            health.report_info("No healthcheck provided")
+            health.info("No healthcheck provided")
         end
     end
 end

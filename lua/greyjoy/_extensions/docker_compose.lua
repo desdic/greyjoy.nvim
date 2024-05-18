@@ -2,7 +2,7 @@ local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then
     vim.notify(
         "This plugin requires greyjoy.nvim (https://github.com/desdic/greyjoy.nvim)",
-        vim.lsp.log_levels.ERROR,
+        vim.log.levels.ERROR,
         { title = "Plugin error" }
     )
     return
@@ -12,13 +12,12 @@ local uok, utils = pcall(require, "greyjoy.utils")
 if not uok then
     vim.notify(
         "This plugin requires greyjoy.nvim (https://github.com/desdic/greyjoy.nvim)",
-        vim.lsp.log_levels.ERROR,
-        { title = "Plugin error" }
+        vim.log.levels.ERROR({ title = "Plugin error" })
     )
     return
 end
 
-local health = vim.health or require("health")
+local health = vim.health
 
 local M = {}
 
@@ -33,7 +32,10 @@ M.parse = function(fileinfo)
     local elements = {}
 
     local pipe = io.popen(
-        M.config["cmd"] .. " -f ".. filename .. " ps --filter 'status=running' --format '{{.Service}}'"
+        M.config["cmd"]
+            .. " -f "
+            .. filename
+            .. " ps --filter 'status=running' --format '{{.Service}}'"
     )
 
     if not pipe then
@@ -52,7 +54,8 @@ M.parse = function(fileinfo)
         if v ~= "" then
             local elem = {}
             elem["name"] = "docker-compose exec " .. v
-            elem["command"] = { M.config["cmd"], "exec",  "-it", v,  M.config["shell"] }
+            elem["command"] =
+                { M.config["cmd"], "exec", "-it", v, M.config["shell"] }
             elem["path"] = filepath
             elem["plugin"] = "docker_compose"
 
@@ -71,9 +74,11 @@ M.health = function()
     local cmd = M.config["cmd"]:match("%S+")
     local basename = string.gsub(cmd, "(.*/)(.*)", "%2")
     if vim.fn.executable(basename) == 1 then
-        health.report_ok("`" .. basename .. "`: Ok")
+        health.ok("`" .. basename .. "`: Ok")
     else
-        health.report_error("`docker_compose` requires " .. basename .." to be installed")
+        health.error(
+            "`docker_compose` requires " .. basename .. " to be installed"
+        )
     end
 end
 
@@ -93,5 +98,9 @@ end
 return greyjoy.register_extension({
     setup = M.setup,
     health = M.health,
-    exports = { type = "file", files = { "docker-compose.yml" }, parse = M.parse },
+    exports = {
+        type = "file",
+        files = { "docker-compose.yml" },
+        parse = M.parse,
+    },
 })
