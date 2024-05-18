@@ -3,7 +3,7 @@ local eq = assert.are.same
 
 describe("makefile extension", function()
     it("runs make", function()
-        local uv = vim.loop or vim.uv
+        local uv = vim.uv
         local vstasks = require("greyjoy._extensions.vscode_tasks")
 
         eq(vstasks.exports, utils.if_nil(vstasks.exports, false))

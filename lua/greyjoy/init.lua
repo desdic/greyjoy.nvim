@@ -217,7 +217,7 @@ greyjoy.run = function(arg)
     local filename = vim.fs.basename(fullname)
     local filepath = vim.fs.dirname(fullname)
     local pluginname = arg or ""
-    local uv = vim.loop or vim.uv
+    local uv = vim.uv
 
     filepath = utils.if_nil(filepath, "")
     if filepath == "" then

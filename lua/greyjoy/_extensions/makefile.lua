@@ -2,13 +2,13 @@ local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then
     vim.notify(
         "This plugin requires greyjoy.nvim (https://github.com/desdic/greyjoy.nvim)",
-        vim.lsp.log_levels.ERROR,
+        vim.log.levels.ERROR,
         { title = "Plugin error" }
     )
     return
 end
 
-local health = vim.health or require("health")
+local health = vim.health
 
 local M = {}
 
@@ -63,14 +63,14 @@ end
 
 M.health = function()
     if vim.fn.executable("make") == 1 then
-        health.report_ok("`make`: Ok")
+        health.ok("`make`: Ok")
     else
-        health.report_error("`makefile` requires make to be installed")
+        health.error("`makefile` requires make to be installed")
     end
     if vim.fn.executable("awk") == 1 then
-        health.report_ok("`awk`: Ok")
+        health.ok("`awk`: Ok")
     else
-        health.report_error("`makefile` requires awk to be installed")
+        health.error("`makefile` requires awk to be installed")
     end
 end
 
