@@ -14,7 +14,11 @@ local M = {}
 
 M.parse = function(fileinfo)
     if type(fileinfo) ~= "table" then
-        print("[cargo] fileinfo must be a table")
+        vim.notify(
+            "fileinfo must be a table",
+            vim.log.levels.ERROR,
+            { title = "Greyjoy cargo" }
+        )
         return {}
     end
 

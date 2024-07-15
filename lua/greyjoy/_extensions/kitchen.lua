@@ -26,7 +26,11 @@ local uv = vim.uv
 
 M.parse = function(fileinfo)
     if type(fileinfo) ~= "table" then
-        print("[kitchen] fileinfo must be a table")
+        vim.notify(
+            "fileinfo must be a table",
+            vim.log.levels.ERROR,
+            { title = "Greyjoy kitchen" }
+        )
         return {}
     end
 

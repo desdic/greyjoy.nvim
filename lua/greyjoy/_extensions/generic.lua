@@ -22,7 +22,11 @@ local M = {}
 
 M.parse = function(fileobj)
     if type(fileobj) ~= "table" then
-        print("[generic] fileinfo must be a table")
+        vim.notify(
+            "fileinfo must be a table",
+            vim.log.levels.ERROR,
+            { title = "Greyjoy generic" }
+        )
         return {}
     end
 
