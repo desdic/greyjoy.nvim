@@ -181,7 +181,10 @@ greyjoy.to_buffer = function(command)
     vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
     vim.api.nvim_open_win(bufnr, 1, opts)
 
-    vim.fn.jobstart(command.command, {
+    local commandstr = table.concat(command.command, " ")
+    local shell_command = { greyjoy.default_shell, "-c", commandstr }
+
+    vim.fn.jobstart(shell_command, {
         stdout_buffered = true,
         on_stdout = append_data,
         on_stderr = append_data,

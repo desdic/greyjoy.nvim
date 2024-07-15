@@ -29,6 +29,7 @@ local defaults = {
     show_command_in_output = true, -- Show the command that was running in output
     patterns = { ".git", ".svn" },
     output_result = "buffer",
+    default_shell = vim.o.shell, -- default shell to run tasks in
     extensions = {},
     last_first = false, -- make sure last option is first on next run, not persistant
 }
