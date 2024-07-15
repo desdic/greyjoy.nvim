@@ -3,7 +3,7 @@ local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then
     vim.notify(
         "This plugin requires greyjoy.nvim (https://github.com/desdic/greyjoy.nvim)",
-        vim.lsp.log_levels.ERROR,
+        vim.log.levels.ERROR,
         { title = "Plugin error" }
     )
     return
@@ -61,7 +61,11 @@ end
 
 M.parse = function(fileinfo)
     if type(fileinfo) ~= "table" then
-        print("[vscode_tasks] fileinfo must be a table")
+        vim.notify(
+            "fileinfo must be a table",
+            vim.log.levels.ERROR,
+            { title = "Greyjoy vscode_tasks" }
+        )
         return {}
     end
 

@@ -9,7 +9,7 @@ local load_extension = function(name)
     if not ok then
         vim.notify(
             "Unable to require greyjoy._extensions." .. name,
-            vim.lsp.log_levels.ERROR,
+            vim.log.levels.ERROR,
             { title = "Plugin error" }
         )
         return

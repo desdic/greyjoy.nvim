@@ -147,13 +147,13 @@ end
 
 greyjoy.to_buffer = function(command)
     local bufnr = vim.api.nvim_create_buf(false, true)
-    vim.api.nvim_buf_set_option(bufnr, "filetype", "greyjoy")
+    vim.api.nvim_set_option_value("filetype", "greyjoy", { buf = bufnr })
 
     local append_data = function(_, data)
         if data then
-            vim.api.nvim_buf_set_option(bufnr, "modifiable", true)
+            vim.api.nvim_set_option_value("modifiable", true, { buf = bufnr })
             vim.api.nvim_buf_set_lines(bufnr, -1, -1, false, data)
-            vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
+            vim.api.nvim_set_option_value("modifiable", false, { buf = bufnr })
         end
     end
 
@@ -178,8 +178,8 @@ greyjoy.to_buffer = function(command)
         focusable = true,
     }
 
-    vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
-    vim.api.nvim_open_win(bufnr, 1, opts)
+    vim.api.nvim_set_option_value("modifiable", false, { buf = bufnr })
+    vim.api.nvim_open_win(bufnr, true, opts)
 
     local commandstr = table.concat(command.command, " ")
     local shell_command = { greyjoy.default_shell, "-c", commandstr }
