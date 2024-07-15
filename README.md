@@ -231,8 +231,7 @@ example:
 
 ## Credits
 
-Thank you @TheSafdarAwan for PR #22
+Thanks to 
 
-## TODO
-
-* Make documentation on how to create a plugin
+@TheSafdarAwan for PR #22
+@costowell for PR #32
