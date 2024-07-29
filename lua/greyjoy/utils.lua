@@ -33,4 +33,12 @@ M.if_nil = function(x, y)
     return x
 end
 
+M.str_to_array = function(str)
+    local words = {}
+    for word in str:gmatch("%S+") do
+        table.insert(words, word)
+    end
+    return words
+end
+
 return M

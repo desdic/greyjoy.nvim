@@ -52,23 +52,32 @@ end
 
 greyjoy.extensions = require("greyjoy._extensions").manager
 
-greyjoy.menu = function(rootdir, elements)
-    if next(elements) == nil then
-        return
-    end
-
+local function generate_list(rootdir, elements, overrides)
     local menuelem = {}
     local menulookup = {}
     local commands = {}
+
     for _, value in ipairs(elements) do
+        local commandinput = table.concat(value.command, " ")
+        local name = value.name
+        local command = value.command
+        local orig_command = nil
+        if overrides[commandinput] then
+            name = overrides[commandinput]
+            -- Store original command before overwriting it
+            orig_command = command
+            command = utils.str_to_array(overrides[commandinput])
+        end
+
         -- keep track of what elements we have
-        menulookup[value["name"]] = true
-        table.insert(menuelem, value["name"])
-        commands[value["name"]] = {
-            command = value["command"],
-            path = value["path"],
-            group_id = value["group_id"],
-            plugin = value["plugin"],
+        menulookup[name] = true
+        table.insert(menuelem, name)
+        commands[name] = {
+            command = command,
+            path = value.path,
+            group_id = value.group_id,
+            plugin = value.plugin,
+            orig_command = orig_command,
         }
     end
 
@@ -87,16 +96,64 @@ greyjoy.menu = function(rootdir, elements)
         end
     end
 
-    vim.ui.select(menuelem, { prompt = "Select a command" }, function(label, _)
+    return menuelem, commands
+end
+
+greyjoy.execute = function(command)
+    if greyjoy.output_results == "toggleterm" then
+        greyjoy.to_toggleterm(command)
+    else
+        greyjoy.to_buffer(command)
+    end
+end
+
+greyjoy.edit = function(rootdir, elements)
+    if next(elements) == nil then
+        return
+    end
+
+    local menuelem, commands =
+        generate_list(rootdir, elements, greyjoy.overrides)
+    vim.ui.select(menuelem, { prompt = "Edit before run" }, function(label)
         if label then
             greyjoy.last_element[rootdir] = label
             local command = commands[label]
 
-            if greyjoy.output_results == "toggleterm" then
-                greyjoy.to_toggleterm(command)
-            else
-                greyjoy.to_buffer(command)
-            end
+            local commandinput = table.concat(command.command, " ")
+
+            vim.ui.input(
+                { prompt = "Edit", default = commandinput },
+                function(input)
+                    if input then
+                        if command.orig_command then
+                            local tmp = table.concat(command.orig_command, " ")
+                            greyjoy.overrides[tmp] = input
+                        else
+                            greyjoy.overrides[commandinput] = input
+                        end
+
+                        command.command = utils.str_to_array(input)
+                        greyjoy.execute(command)
+                    end
+                end
+            )
+        end
+    end)
+end
+
+greyjoy.menu = function(rootdir, elements)
+    if next(elements) == nil then
+        return
+    end
+
+    local menuelem, commands =
+        generate_list(rootdir, elements, greyjoy.overrides)
+    vim.ui.select(menuelem, { prompt = "Select a command" }, function(label)
+        if label then
+            greyjoy.last_element[rootdir] = label
+            local command = commands[label]
+
+            greyjoy.execute(command)
         end
     end)
 end
@@ -209,7 +266,7 @@ local add_elements = function(elements, output)
     end
 end
 
-greyjoy.run = function(arg)
+greyjoy.run = function(arg, method)
     -- just return if disabled
     if not greyjoy.enable then
         return
@@ -270,11 +327,19 @@ greyjoy.run = function(arg)
         end
     end
 
-    greyjoy.menu(rootdir, elements)
+    if method == "edit" then
+        greyjoy.edit(rootdir, elements)
+    else
+        greyjoy.menu(rootdir, elements)
+    end
 end
 
 vim.api.nvim_create_user_command("Greyjoy", function(args)
     greyjoy.run(args.args)
 end, { nargs = "*", desc = "Run greyjoy" })
+
+vim.api.nvim_create_user_command("Greyedit", function(args)
+    greyjoy.run(args.args, "edit")
+end, { nargs = "*", desc = "Edit greyjoy" })
 
 return greyjoy

@@ -32,6 +32,7 @@ local defaults = {
     default_shell = vim.o.shell, -- default shell to run tasks in
     extensions = {},
     last_first = false, -- make sure last option is first on next run, not persistant
+    overrides = {}, -- make global overrides
 }
 
 -- Set/Change options
