@@ -39,7 +39,7 @@ M.parse = function(fileinfo)
         M.config["cmd"]
             .. " -f "
             .. filename
-            .. " ps --filter 'status=running' --format '{{.Service}}'"
+            .. " ps --filter 'status=running' --format '{{.Service}}' 2>/dev/null"
     )
 
     if not pipe then
