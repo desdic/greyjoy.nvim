@@ -48,6 +48,7 @@ Neovim 0.9+ is required
   extensions = {}, -- no extensions are loaded per default
   last_first = false, -- make sure last option is first on next run, not persistant
   run_groups = {}, -- no groups configured per default
+  overrides = {}, -- make global overrides
 }
 ```
 
@@ -198,7 +199,7 @@ use({"desdic/greyjoy.nvim",
 })
 ```
 
-Once installed and reloaded you can use `:Greyjoy` to run it or `Greyjoy <pluginname or group name>`.
+Once installed and reloaded you can use `:Greyjoy` to run it or `Greyjoy <pluginname or group name>`. If you need to edit a command (like adding a variable or option) you can use `:Greyedit` (Works with group and plugins as parameter too).
 
 So in the above example its possible to run the generic and makefile plugin by running `:Greyjoy fast` or if you only wanted to run the makefile plugin you could do `:Greyjoy makefile`
 
