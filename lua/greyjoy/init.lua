@@ -293,6 +293,7 @@ greyjoy.run = function(arg, method)
         fullname = fullname,
         filename = filename,
         filepath = filepath,
+        rootdir = rootdir,
     }
 
     local elements = {}
