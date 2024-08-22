@@ -33,11 +33,13 @@ M.parse = function(fileobj)
     local filename = fileobj.filename
     local filetype = fileobj.filetype
     local filepath = fileobj.filepath
+    local rootdir = fileobj.rootdir
 
     local globalcommands = {}
     if M.config.commands then
         for k, v in pairs(M.config.commands) do
-            local match = utils.is_match(v, filename, filetype, filepath)
+            local match =
+                utils.is_match(v, filename, filetype, filepath, rootdir)
 
             if match then
                 local elem = {}
