@@ -11,6 +11,7 @@ describe("makefile extension", function()
             filename = "test.py",
             filetype = "python",
             filepath = "/home/example",
+            rootdir = "/home/example",
         }
 
         local config = {
