@@ -47,6 +47,7 @@ M.parse = function(fileobj)
                 -- replace variables in name
                 k = k:gsub("{filename}", filename)
                 k = k:gsub("{filepath}", filepath)
+                k = k:gsub("{rootdir}", rootdir)
 
                 -- clone command and replace variables
                 local command = {}
@@ -54,6 +55,7 @@ M.parse = function(fileobj)
                     local celem = v.command[index]
                     celem = celem:gsub("{filename}", filename)
                     celem = celem:gsub("{filepath}", filepath)
+                    celem = celem:gsub("{rootdir}", rootdir)
 
                     table.insert(command, celem)
                 end

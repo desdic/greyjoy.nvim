@@ -10,6 +10,7 @@ M.file_exists = function(filename, obj)
 end
 
 M.directory_exists = function(dirname, obj)
+    print(vim.inspect(dirname))
     local fpath = vim.fs.joinpath(obj.rootdir, dirname)
     if greyutil.directory_exists(fpath) then
         return true
