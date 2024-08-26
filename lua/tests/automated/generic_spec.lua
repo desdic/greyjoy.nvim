@@ -1,8 +1,8 @@
 local utils = require("greyjoy.utils")
 local eq = assert.are.same
 
-describe("makefile extension", function()
-    it("runs make", function()
+describe("generic extension", function()
+    it("reads config", function()
         local generic = require("greyjoy._extensions.generic")
 
         eq(generic.exports, utils.if_nil(generic.exports, false))

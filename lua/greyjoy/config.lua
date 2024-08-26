@@ -14,6 +14,12 @@ local defaults = {
             -- term.
             size = nil,
         },
+        telescope = {
+            keys = {
+                select = "<CR>", -- enter
+                edit = "<C-e>", -- CTRL-e
+            },
+        },
     },
     toggleterm = {
         -- default_group_id can be a number or a function that takes a string as parameter.

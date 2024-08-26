@@ -57,4 +57,27 @@ M.str_to_array = function(str)
     return words
 end
 
+M.new_file_obj = function(patterns)
+    local filetype = vim.bo.filetype
+    local fullname = vim.api.nvim_buf_get_name(0)
+    local filename = vim.fs.basename(fullname)
+    local filepath = vim.fs.dirname(fullname)
+
+    filepath = M.if_nil(filepath, "")
+    if filepath == "" then
+        filepath = vim.uv.cwd()
+    end
+
+    local rootdir = vim.fs.dirname(vim.fs.find(patterns, { upward = true })[1])
+    rootdir = M.if_nil(rootdir, filepath)
+
+    return {
+        filetype = filetype,
+        fullname = fullname,
+        filename = filename,
+        filepath = filepath,
+        rootdir = rootdir,
+    }
+end
+
 return M
