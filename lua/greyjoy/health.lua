@@ -7,11 +7,14 @@ local M = {}
 M.check = function()
     health.start("Checking for optional plugins")
 
-    local ok, _ = pcall(require, "toggleterm")
-    if not ok then
-        health.warn("`toggleterm` not installed")
-    else
-        health.ok("`toggleterm` installed")
+    local optional = { "toggleterm", "telescope", "plenary" }
+    for _, plugin in pairs(optional) do
+        local ok, _ = pcall(require, plugin)
+        if not ok then
+            health.warn("`" .. plugin .. "` not installed")
+        else
+            health.ok("`" .. plugin .. "` installed")
+        end
     end
 
     health.start("===== Installed extensions =====")

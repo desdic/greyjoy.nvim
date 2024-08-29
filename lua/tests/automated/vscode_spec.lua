@@ -1,8 +1,8 @@
 local utils = require("greyjoy.utils")
 local eq = assert.are.same
 
-describe("makefile extension", function()
-    it("runs make", function()
+describe("vscode extension", function()
+    it("parses tasks.json", function()
         local uv = vim.uv
         local vstasks = require("greyjoy._extensions.vscode_tasks")
 

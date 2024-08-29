@@ -184,6 +184,8 @@ greyjoy.to_toggleterm = function(command)
         end
     end
 
+    -- TermExec cmd=
+
     local commandstr = table.concat(command.command, " ")
     local exec_command = "dir='"
         .. command.path
@@ -199,6 +201,9 @@ greyjoy.to_toggleterm = function(command)
             .. " "
             .. exec_command
     end
+
+    -- vim.cmd([[TermExec cmd='ls']])
+
     toggleterm.exec_command(exec_command, count)
 end
 
@@ -272,30 +277,10 @@ greyjoy.run = function(arg, method)
         return
     end
 
-    local filetype = vim.bo.filetype
-    local fullname = vim.api.nvim_buf_get_name(0)
-    local filename = vim.fs.basename(fullname)
-    local filepath = vim.fs.dirname(fullname)
     local pluginname = arg or ""
-    local uv = vim.uv
 
-    filepath = utils.if_nil(filepath, "")
-    if filepath == "" then
-        filepath = uv.cwd()
-    end
-
-    local rootdir =
-        vim.fs.dirname(vim.fs.find(greyjoy.patterns, { upward = true })[1])
-    rootdir = utils.if_nil(rootdir, filepath)
-
-    local fileobj = {
-        filetype = filetype,
-        fullname = fullname,
-        filename = filename,
-        filepath = filepath,
-        rootdir = rootdir,
-    }
-
+    local fileobj = utils.new_file_obj(greyjoy.patterns)
+    local rootdir = fileobj.rootdir
     local elements = {}
 
     for p, v in pairs(greyjoy.extensions) do
@@ -342,5 +327,12 @@ end, { nargs = "*", desc = "Run greyjoy" })
 vim.api.nvim_create_user_command("Greyedit", function(args)
     greyjoy.run(args.args, "edit")
 end, { nargs = "*", desc = "Edit greyjoy" })
+
+local has_telescope, _ = pcall(require, "telescope")
+if has_telescope then
+    vim.api.nvim_create_user_command("GreyjoyTelescope", function(args)
+        require("greyjoy.telescope").run(args.args)
+    end, { nargs = "*", desc = "Run greyjoy via telescope" })
+end
 
 return greyjoy

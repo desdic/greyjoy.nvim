@@ -6,15 +6,19 @@
 
 `greyjoy.nvim` is a pluggable pattern/file based launcher.
 
-![Demo of greyjoy](doc/greyjoy.gif?raw=true "Demo of greyjoy")
+[![Greyjoy.nvim demo](http://img.youtube.com/vi/9AcNjkqROIM/0.jpg)](http://www.youtube.com/watch?v=9AcNjkqROIM "Greyjoy.nvim demo")
 
-greyjoy uses vim.ui.select so the settings from (telescope, dressing etc.) menu will reflect it. The above example uses telescope.
+Greyjoy per default uses vim.ui.select so the settings from (telescope, dressing etc.) menu will reflect it. But there is also a telescope only version that uses async which makes the UI feel faster.
 
 Integration with [toggleterm](https://github.com/akinsho/toggleterm.nvim) is also provided.
 
 ## Requirements
 
-Neovim 0.9+ is required
+Neovim 0.10+ is required
+
+[Toggleterm](https://github.com/akinsho/toggleterm.nvim) (Optional)
+
+[Telescope](https://github.com/nvim-telescope/telescope.nvim) + [Plenary](https://github.com/nvim-lua/plenary.nvim) (Optional but UI is more responsive)
 
 ## Default settings
 
@@ -29,6 +33,12 @@ Neovim 0.9+ is required
       -- greyjoy.nvim it will be dependent on the user configured size for toggle
       -- term.
       size = nil,
+    },
+    telescope = {
+        keys = {
+            select = "<CR>", -- enter
+            edit = "<C-e>", -- CTRL-e
+        },
     }
   },
   toggleterm = {
@@ -180,11 +190,14 @@ Using lazy
     "desdic/greyjoy.nvim",
     keys = {
         { "<Leader>gr", "<cmd>Greyjoy<CR>", desc = "[G]reyjoy [r]un" },
+        { "<Leader>gt", "<cmd>GreyjoyTelescope<CR>", desc = "[G]reyjoy [t]elescope" },
         { "<Leader>gg", "<cmd>Greyjoy fast<CR>", desc = "[G]reyjoy fast [g]roup" },
         { "<Leader>ge", "<cmd>Greyedit<CR>", desc = "[G]reyjoy [r]un" },
     },
     dependencies = {
-        { "akinsho/toggleterm.nvim" },
+        { "akinsho/toggleterm.nvim" }, -- Optional
+        { "nvim-lua/plenary.nvim" }, -- Optional
+        { "nvim-telescope/telescope.nvim" }, -- Optional
     },
     cmd = "Greyjoy",
     config = function()
@@ -244,7 +257,7 @@ Using lazy
 }
 ```
 
-Once installed and reloaded you can use `:Greyjoy` to run it or `Greyjoy <pluginname or group name>`. If you need to edit a command (like adding a variable or option) you can use `:Greyedit` (Works with group and plugins as parameter too).
+Once installed and reloaded you can use `:Greyjoy` or `:GreyjoyTelescope` to run it or `Greyjoy/GreyjoyTelescope <pluginname or group name>`. If you need to edit a command (like adding a variable or option) you can use `:Greyedit` (Works with group and plugins as parameter too).
 
 So in the above example its possible to run the generic and makefile plugin by running `:Greyjoy fast` or if you only wanted to run the makefile plugin you could do `:Greyjoy makefile`
 
