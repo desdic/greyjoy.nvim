@@ -24,6 +24,20 @@ local health = vim.health
 local M = {}
 local uv = vim.uv
 
+local valid_target = function(target, suite)
+    if target ~= "login" then
+        return true
+    end
+
+    if
+        target == "login" and utils.file_exists(".kitchen/" .. suite .. ".yml")
+    then
+        return true
+    end
+
+    return false
+end
+
 M.parse = function(fileinfo)
     if type(fileinfo) ~= "table" then
         vim.notify(
@@ -61,15 +75,17 @@ M.parse = function(fileinfo)
         table.insert(tmp, "all")
     end
 
-    for _, v in ipairs(tmp) do
-        if v ~= "" then
+    for _, suite in ipairs(tmp) do
+        if suite ~= "" then
             for _, target in ipairs(M.config.targets) do
-                local elem = {}
-                elem["name"] = "kitchen " .. target .. " " .. v
-                elem["command"] = { "kitchen", target, v }
-                elem["path"] = filepath
-                elem["plugin"] = "kitchen"
-                table.insert(elements, elem)
+                if valid_target(target, suite) then
+                    local elem = {}
+                    elem["name"] = "kitchen " .. target .. " " .. suite
+                    elem["command"] = { "kitchen", target, suite }
+                    elem["path"] = filepath
+                    elem["plugin"] = "kitchen"
+                    table.insert(elements, elem)
+                end
             end
         end
     end
@@ -96,7 +112,8 @@ M.setup = function(config)
     M.config = config
 
     if not M.config.targets then
-        M.config["targets"] = { "converge", "verify", "test", "destroy" }
+        M.config["targets"] =
+            { "converge", "verify", "test", "destroy", "login" }
     end
 
     M.config.include_all = utils.if_nil(M.config.include_all, false)
