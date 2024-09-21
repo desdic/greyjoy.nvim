@@ -279,7 +279,11 @@ greyjoy.run = function(arg, method)
 
     local pluginname = arg or ""
 
-    local fileobj = utils.new_file_obj(greyjoy.patterns)
+    local fileobj = utils.new_file_obj(
+        greyjoy.patterns,
+        vim.api.nvim_buf_get_name(0),
+        vim.bo.filetype
+    )
     local rootdir = fileobj.rootdir
     local elements = {}
 

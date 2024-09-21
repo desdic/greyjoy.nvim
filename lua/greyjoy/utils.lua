@@ -57,11 +57,10 @@ M.str_to_array = function(str)
     return words
 end
 
-M.new_file_obj = function(patterns)
-    local filetype = vim.bo.filetype
-    local fullname = vim.api.nvim_buf_get_name(0)
-    local filename = vim.fs.basename(fullname)
-    local filepath = vim.fs.dirname(fullname)
+M.new_file_obj = function(patterns, bufname, filetype)
+    local fullname = bufname
+    local filename = vim.fs.basename(bufname)
+    local filepath = vim.fs.dirname(bufname)
 
     filepath = M.if_nil(filepath, "")
     if filepath == "" then
