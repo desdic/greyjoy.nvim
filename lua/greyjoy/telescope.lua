@@ -46,8 +46,14 @@ local collect_output = function(output, on_item_collected)
     end
 end
 
-greytelescope.run_async = function(arg, on_item_collected, on_complete)
-    local fileobj = utils.new_file_obj(greyjoy.patterns)
+greytelescope.run_async = function(
+    arg,
+    bufname,
+    filetype,
+    on_item_collected,
+    on_complete
+)
+    local fileobj = utils.new_file_obj(greyjoy.patterns, bufname, filetype)
     local rootdir = fileobj.rootdir
 
     local pluginname = arg or ""
@@ -119,6 +125,10 @@ greytelescope.run = function(arg)
             end,
         })
     end
+
+    -- Get name of buffer before opening telescope, else we get the telescope buffer
+    local bufname = vim.api.nvim_buf_get_name(0)
+    local filetype = vim.bo.filetype
 
     local picker = pickers.new({}, {
         prompt_title = "Runners",
@@ -195,7 +205,13 @@ greytelescope.run = function(arg)
     end
 
     -- Start the asynchronous collection and processing
-    greytelescope.run_async(arg, on_item_collected, on_complete)
+    greytelescope.run_async(
+        arg,
+        bufname,
+        filetype,
+        on_item_collected,
+        on_complete
+    )
 end
 
 return greytelescope
