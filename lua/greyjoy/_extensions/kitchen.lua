@@ -84,6 +84,8 @@ M.parse = function(fileinfo)
                     elem["command"] = { "kitchen", target, suite }
                     elem["path"] = filepath
                     elem["plugin"] = "kitchen"
+                    elem["pre_hook"] = M.config.pre_hook or nil
+                    elem["post_hook"] = M.config.post_hook or nil
                     table.insert(elements, elem)
                 end
             end

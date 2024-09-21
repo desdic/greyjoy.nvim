@@ -26,6 +26,8 @@ M.parse_v2 = function(content, filepath)
                 elem["command"] = { v["command"] }
                 elem["path"] = filepath
                 elem["plugin"] = "vscode_tasks"
+                elem["pre_hook"] = M.config.pre_hook or nil
+                elem["post_hook"] = M.config.post_hook or nil
 
                 if v["args"] then
                     for _, value in pairs(v["args"]) do

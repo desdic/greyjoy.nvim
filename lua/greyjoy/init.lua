@@ -100,10 +100,22 @@ local function generate_list(rootdir, elements, overrides)
 end
 
 greyjoy.execute = function(command)
+    vim.api.nvim_exec_autocmds("User", { pattern = "GreyjoyBeforeExec" })
+
+    if command.pre_hook then
+        command.pre_hook(command)
+    end
+
     if greyjoy.output_results == "toggleterm" then
         greyjoy.to_toggleterm(command)
     else
         greyjoy.to_buffer(command)
+    end
+
+    vim.api.nvim_exec_autocmds("User", { pattern = "GreyjoyAfterExec" })
+
+    if command.post_hook then
+        command.post_hook()
     end
 end
 
@@ -201,8 +213,6 @@ greyjoy.to_toggleterm = function(command)
             .. " "
             .. exec_command
     end
-
-    -- vim.cmd([[TermExec cmd='ls']])
 
     toggleterm.exec_command(exec_command, count)
 end

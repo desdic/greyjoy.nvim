@@ -57,12 +57,18 @@ M.parse = function(fileinfo)
             elem["command"] = { "make", v }
             elem["path"] = filepath
             elem["plugin"] = "makefile"
+            elem["pre_hook"] = M.config.pre_hook or nil
+            elem["post_hook"] = M.config.post_hook or nil
 
             table.insert(elements, elem)
         end
     end
 
     return elements
+end
+
+M.setup = function(config)
+    M.config = config
 end
 
 M.health = function()
@@ -79,7 +85,7 @@ M.health = function()
 end
 
 return greyjoy.register_extension({
-    setup = function(_) end,
+    setup = M.setup,
     health = M.health,
     exports = { type = "file", files = { "Makefile" }, parse = M.parse },
 })

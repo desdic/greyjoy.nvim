@@ -64,6 +64,8 @@ M.parse = function(fileobj)
                 elem["command"] = command
                 elem["path"] = filepath
                 elem["plugin"] = "generic"
+                elem["pre_hook"] = v.pre_hook or nil
+                elem["post_hook"] = v.post_hook or nil
 
                 table.insert(globalcommands, elem)
             end
