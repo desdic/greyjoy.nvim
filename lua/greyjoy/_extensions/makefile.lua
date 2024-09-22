@@ -1,3 +1,14 @@
+---
+--- The makefile extension scans the makefile for targets
+---
+---@usage default configuration for the makefile extention
+---
+--- makefile = {
+---   group_id = nil, -- group id for toggleterm
+---   pre_hook = nil, -- run before executing command
+---   post_hook = nil, -- run after executing command
+--- }
+---@tag makefile
 local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then
     vim.notify(
@@ -10,9 +21,9 @@ end
 
 local health = vim.health
 
-local M = {}
+local Makefile = {}
 
-M.parse = function(fileinfo)
+Makefile.parse = function(fileinfo)
     if type(fileinfo) ~= "table" then
         vim.notify(
             "fileinfo must be a table",
@@ -57,8 +68,9 @@ M.parse = function(fileinfo)
             elem["command"] = { "make", v }
             elem["path"] = filepath
             elem["plugin"] = "makefile"
-            elem["pre_hook"] = M.config.pre_hook or nil
-            elem["post_hook"] = M.config.post_hook or nil
+            elem["group_id"] = Makefile.config.group_id or nil
+            elem["pre_hook"] = Makefile.config.pre_hook or nil
+            elem["post_hook"] = Makefile.config.post_hook or nil
 
             table.insert(elements, elem)
         end
@@ -67,11 +79,17 @@ M.parse = function(fileinfo)
     return elements
 end
 
-M.setup = function(config)
-    M.config = config
+---@class MakefileOpts
+---@field group_id number?: Toggleterm terminal group id. (default: nil)
+---@field pre_hook function?: Function to run before running command
+---@field post_hook function?: Function to run after running command
+---
+---@param config MakefileOpts?: Configuration options
+Makefile.setup = function(config)
+    Makefile.config = config
 end
 
-M.health = function()
+Makefile.health = function()
     if vim.fn.executable("make") == 1 then
         health.ok("`make`: Ok")
     else
@@ -85,7 +103,7 @@ M.health = function()
 end
 
 return greyjoy.register_extension({
-    setup = M.setup,
-    health = M.health,
-    exports = { type = "file", files = { "Makefile" }, parse = M.parse },
+    setup = Makefile.setup,
+    health = Makefile.health,
+    exports = { type = "file", files = { "Makefile" }, parse = Makefile.parse },
 })

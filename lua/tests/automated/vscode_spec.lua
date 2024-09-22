@@ -5,6 +5,7 @@ describe("vscode extension", function()
     it("parses tasks.json", function()
         local uv = vim.uv
         local vstasks = require("greyjoy._extensions.vscode_tasks")
+        vstasks.setup({})
 
         eq(vstasks.exports, utils.if_nil(vstasks.exports, false))
         eq("file", utils.if_nil(vstasks.exports.type, false))

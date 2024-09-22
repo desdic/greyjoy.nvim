@@ -4,7 +4,7 @@
 
 ## What is greyjoy
 
-`greyjoy.nvim` is a pluggable pattern/file based launcher.
+`greyjoy.nvim` is a pluggable pattern/file based launcher/runner.
 
 [![Greyjoy.nvim demo](http://img.youtube.com/vi/9AcNjkqROIM/0.jpg)](http://www.youtube.com/watch?v=9AcNjkqROIM "Greyjoy.nvim demo")
 
@@ -19,6 +19,74 @@ Neovim 0.10+ is required
 [Toggleterm](https://github.com/akinsho/toggleterm.nvim) (Optional)
 
 [Telescope](https://github.com/nvim-telescope/telescope.nvim) + [Plenary](https://github.com/nvim-lua/plenary.nvim) (Optional but UI is more responsive)
+
+## Installing
+
+Using lazy (A more comprehensive example can be found in the [documentation](doc/greyjoy.txt))
+
+```
+{
+    "desdic/greyjoy.nvim",
+    keys = {
+        { "<Leader>gr", "<cmd>Greyjoy<CR>", desc = "[G]reyjoy [r]un" },
+        { "<Leader>gt", "<cmd>GreyjoyTelescope<CR>", desc = "[G]reyjoy [t]elescope" },
+        { "<Leader>gg", "<cmd>Greyjoy fast<CR>", desc = "[G]reyjoy fast [g]roup" },
+        { "<Leader>ge", "<cmd>Greyedit<CR>", desc = "[G]reyjoy [e]edit before run" },
+    },
+    dependencies = {
+        { "akinsho/toggleterm.nvim" }, -- Optional
+        { "nvim-lua/plenary.nvim" }, -- Optional
+        { "nvim-telescope/telescope.nvim" }, -- Optional
+    },
+    cmd = { "Greyjoy", "Greyedit", "GreyjoyTelescope" },
+    config = function()
+        local greyjoy = require("greyjoy")
+        local condition = require("greyjoy.conditions")
+        greyjoy.setup({
+            output_results = "toggleterm",
+            last_first = true,
+            extensions = {
+                generic = {
+                    commands = {
+                        ["run {filename}"] = { command = { "python3", "{filename}" }, filetype = "python" },
+                        ["build main.go"] = {
+                            command = { "go", "build", "main.go" },
+                            filetype = "go",
+                            filename = "main.go",
+                        },
+                        ["zig build"] = {
+                            command = { "zig", "build" },
+                            filetype = "zig",
+                        },
+                        ["cmake -S . -B target"] = {
+                            command = { "cmake", "-S", ".", "-B", "target" },
+                            condition = function(n)
+                                return condition.file_exists("CMakeLists.txt", n)
+                                    and not condition.directory_exists("target", n)
+                            end,
+                        },
+                    },
+                },
+                kitchen = { group_id = 2, targets = { "converge", "verify", "destroy", "test" }, include_all = false },
+                docker_compose = { group_id = 3 },
+                cargo = { group_id = 4 },
+            },
+            run_groups = { fast = { "generic", "makefile", "cargo", "docker_compose" } },
+        })
+
+        greyjoy.load_extension("cargo") -- optional
+        greyjoy.load_extension("docker_compose") -- optional
+        greyjoy.load_extension("generic") -- optional
+        greyjoy.load_extension("kitchen") -- optional
+        greyjoy.load_extension("makefile") -- optional
+        greyjoy.load_extension("vscode_tasks") -- optional
+    end,
+}
+```
+
+Once installed and reloaded you can use `:Greyjoy` or `:GreyjoyTelescope` to run it or `Greyjoy/GreyjoyTelescope <pluginname or group name>`. If you need to edit a command (like adding a variable or option) you can use `:Greyedit` (Works with group and plugins as parameter too).
+
+So in the above example its possible to run the generic and makefile plugin by running `:Greyjoy fast` or if you only wanted to run the makefile plugin you could do `:Greyjoy makefile`
 
 ## Default settings
 
@@ -114,14 +182,13 @@ generic = {
 },
 ```
 
-The generic module can substitue current variables
+The generic module can substitute current variables
 
 | variable | expands to |
 | :--- | :--- |
 | {filename} | current filename |
 | {filepath} | path of current file |
 | {rootdir} | path of root (containing patterns like .git) |
-
 
 The above example is only triggered if a file is of type `python` and the filename matches `test.py`
 
@@ -139,127 +206,19 @@ The `vscode_tasks` extension is filebased and will only trigger if `.vscode/task
 
 The `kitchen` extension is also filebased and looks for `.kitchen.yml` and requires `kitchen` (from chefdk or cinc-workstation) + `awk` to be installed.
 
-This extension has a few config options like which `kitchen` targets you want
-
-Default is:
-
-```
-kitchen = {
-  targets = {"converge", "verify", "test", "destroy"}, -- targets
-  include_all = false, -- include all in list
-}
-```
-
 NOTICE: kitchen is quite slow so its possible to create a group without it and only use it when needed
 
 ### Cargo
 
 The `cargo` extension is filebased and looks for `Cargo.toml` and requires `cargo`
 
-Default is:
-
-```
-cargo = {
-  targets = {
-    {"build"}, {"build", "--release"}, {"check"}, {"clean"},
-    {"update"}
-  }
-}
-
-```
-
 ### Docker_compose
 
 The `docker_compose` extension is filebased and looks for `docker-compose.yml` and requires `docker-compose`/`docker compose`
 
-Default is:
+## Documentation
 
-```
-docker_compose = { 
-   cmd = "/usr/bin/docker-compose", -- can be replaced with /usr/bin/docker compose
-   shell = "/bin/bash"
-}
-```
-
-## Installing
-
-Using lazy
-
-```
-{
-    "desdic/greyjoy.nvim",
-    keys = {
-        { "<Leader>gr", "<cmd>Greyjoy<CR>", desc = "[G]reyjoy [r]un" },
-        { "<Leader>gt", "<cmd>GreyjoyTelescope<CR>", desc = "[G]reyjoy [t]elescope" },
-        { "<Leader>gg", "<cmd>Greyjoy fast<CR>", desc = "[G]reyjoy fast [g]roup" },
-        { "<Leader>ge", "<cmd>Greyedit<CR>", desc = "[G]reyjoy [r]un" },
-    },
-    dependencies = {
-        { "akinsho/toggleterm.nvim" }, -- Optional
-        { "nvim-lua/plenary.nvim" }, -- Optional
-        { "nvim-telescope/telescope.nvim" }, -- Optional
-    },
-    cmd = "Greyjoy",
-    config = function()
-        local greyjoy = require("greyjoy")
-        local condition = require("greyjoy.conditions")
-        greyjoy.setup({
-            output_results = "toggleterm",
-            last_first = true,
-            extensions = {
-                generic = {
-                    commands = {
-                        ["run {filename}"] = { command = { "python3", "{filename}" }, filetype = "python" },
-                        ["run main.go"] = {
-                            command = { "go", "run", "main.go" },
-                            filetype = "go",
-                            filename = "main.go",
-                        },
-                        ["build main.go"] = {
-                            command = { "go", "build", "main.go" },
-                            filetype = "go",
-                            filename = "main.go",
-                        },
-                        ["zig build"] = {
-                            command = { "zig", "build" },
-                            filetype = "zig",
-                        },
-                        ["cmake --build target"] = {
-                            command = { "cmake", "--build", "target" },
-                            condition = function(n)
-                                return condition.file_exists("CMakeLists.txt", n)
-                                    and condition.directory_exists("target", n)
-                            end,
-                        },
-                        ["cmake -S . -B target"] = {
-                            command = { "cmake", "-S", ".", "-B", "target" },
-                            condition = function(n)
-                                return condition.file_exists("CMakeLists.txt", n)
-                                    and not condition.directory_exists("target", n)
-                            end,
-                        },
-                    },
-                },
-                kitchen = { group_id = 2, targets = { "converge", "verify", "destroy", "test" }, include_all = false },
-                docker_compose = { group_id = 3 },
-                cargo = { group_id = 4 },
-            },
-            run_groups = { fast = { "generic", "makefile", "cargo", "docker_compose" } },
-        })
-
-        greyjoy.load_extension("cargo")
-        greyjoy.load_extension("docker_compose")
-        greyjoy.load_extension("generic")
-        greyjoy.load_extension("kitchen")
-        greyjoy.load_extension("makefile")
-        greyjoy.load_extension("vscode_tasks")
-    end,
-}
-```
-
-Once installed and reloaded you can use `:Greyjoy` or `:GreyjoyTelescope` to run it or `Greyjoy/GreyjoyTelescope <pluginname or group name>`. If you need to edit a command (like adding a variable or option) you can use `:Greyedit` (Works with group and plugins as parameter too).
-
-So in the above example its possible to run the generic and makefile plugin by running `:Greyjoy fast` or if you only wanted to run the makefile plugin you could do `:Greyjoy makefile`
+Full configuration options and examples can be found in the [documentation](doc/greyjoy.txt)
 
 ## Checkhealth
 

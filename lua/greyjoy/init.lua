@@ -1,9 +1,187 @@
+---
+--- Greyjoy is highly customizable and plugable runner for Neovim
+---
+---@usage Feature rich example using the Lazy plugin manager
+---
+--- {
+---     "desdic/greyjoy.nvim",
+---     keys = {
+---         { "<Leader>gr", "<cmd>GreyjoyTelescope<CR>", desc = "[G]reyjoy [r]un" },
+---         { "<Leader>gg", "<cmd>GreyjoyTelescope fast<CR>", desc = "[G]reyjoy fast [g]roup" },
+---         { "<Leader>ge", "<cmd>Greyedit<CR>", desc = "[G]reyjoy [r]un" },
+---     },
+---     dependencies = {
+---         { "akinsho/toggleterm.nvim" },
+---     },
+---     cmd = { "Greyjoy", "Greyedit", "GreyjoyTelescope" },
+---     config = function()
+---         local greyjoy = require("greyjoy")
+---         local condition = require("greyjoy.conditions")
+---
+---         local tmpmakename = nil
+---
+---         local my_pre_hook = function(command)
+---             tmpmakename = os.tmpname()
+---             table.insert(command.command, "2>&1")
+---             table.insert(command.command, "|")
+---             table.insert(command.command, "tee")
+---             table.insert(command.command, tmpmakename)
+---         end
+---
+---         -- A bit hacky solution to checking when tee has flushed its file
+---         -- but this mimics the behaviour of `:make` and its to demonstrate how
+---         -- hooks can be used (requires inotifywait installed)
+---         local my_post_hook = function()
+---             vim.cmd(":cexpr []")
+---             local cmd = { "inotifywait", "-e", "close_write", tmpmakename }
+---
+---             local job_id = vim.fn.jobstart(cmd, {
+---                 stdout_buffered = true,
+---                 on_exit = function(_, _, _)
+---                     if tmpmakename ~= nil then
+---                         vim.cmd(":cgetfile " .. tmpmakename)
+---                         os.remove(tmpmakename)
+---                     end
+---                 end,
+---             })
+---
+---             if job_id <= 0 then
+---                 vim.notify("Failed to start inotifywait!")
+---             end
+---         end
+---
+---          -- Example of autocmds
+---          local my_group =
+---              vim.api.nvim_create_augroup("MyCustomEventGroup", { clear = true })
+---
+---          vim.api.nvim_create_autocmd("User", {
+---              pattern = "GreyjoyBeforeExec",
+---              group = my_group,
+---              callback = function()
+---                  print("Before run!")
+---              end,
+---          })
+---
+---          vim.api.nvim_create_autocmd("User", {
+---              pattern = "GreyjoyAfterExec",
+---              group = my_group,
+---              callback = function()
+---                  print("After run")
+---              end,
+---          })
+---
+---         greyjoy.setup({
+---             output_results = "toggleterm",
+---             last_first = true,
+---             extensions = {
+---                 generic = {
+---                     commands = {
+---                         ["run {filename}"] = { command = { "python3", "{filename}" }, filetype = "python" },
+---                         ["run main.go"] = {
+---                             command = { "go", "run", "main.go" },
+---                             filetype = "go",
+---                             filename = "main.go",
+---                         },
+---                         ["build main.go"] = {
+---                             command = { "go", "build", "main.go" },
+---                             filetype = "go",
+---                             filename = "main.go",
+---                         },
+---                         ["zig build"] = {
+---                             command = { "zig", "build" },
+---                             filetype = "zig",
+---                         },
+---                         ["cmake --build target"] = {
+---                             command = { "cd", "{rootdir}", "&&", "cmake", "--build", "{rootdir}/target" },
+---                             condition = function(n)
+---                                 return condition.file_exists("CMakeLists.txt", n)
+---                                     and condition.directory_exists("target", n)
+---                             end,
+---                         },
+---                         ["cmake -S . -B target"] = {
+---                             command = { "cd", "{rootdir}", "&&", "cmake", "-S", ".", "-B", "{rootdir}/target" },
+---                             condition = function(n)
+---                                 return condition.file_exists("CMakeLists.txt", n)
+---                                     and not condition.directory_exists("target", n)
+---                             end,
+---                         },
+---                         ["build-login"] = {
+---                             command = { "kitchenlogin.sh" },
+---                             condition = function(n)
+---                                 return condition.directory_exists("kitchen-build/.kitchen", n)
+---                             end,
+---                         },
+---                     },
+---                 },
+---                 kitchen = {
+---                     group_id = 2,
+---                     targets = { "converge", "verify", "destroy", "test", "login" },
+---                     include_all = false,
+---                 },
+---                 docker_compose = { group_id = 3 },
+---                 cargo = { group_id = 4 },
+---                 makefile = {
+---                     pre_hook = my_pre_hook,
+---                     post_hook = my_post_hook,
+---                 },
+---             },
+---             run_groups = { fast = { "generic", "makefile", "cargo", "docker_compose" } },
+---         })
+---
+---         greyjoy.load_extension("generic")
+---         greyjoy.load_extension("makefile")
+---         greyjoy.load_extension("kitchen")
+---         greyjoy.load_extension("cargo")
+---         greyjoy.load_extension("docker_compose")
+---     end,
+--- }
+
 local greyjoy = {}
 local config = require("greyjoy.config")
 local utils = require("greyjoy.utils")
 local _extensions = require("greyjoy._extensions")
 
--- Override defaults with configuration
+---@class UIBufferOpts
+---@field width number?
+---@field height number?
+---
+---@class TogggleTermUIOpts
+---@field size table?
+---
+---@class TelescopeOptsKeys
+---@field select string?
+---@field edit string?
+---
+---@class TelescopeOpts
+---@field keys TelescopeOptsKeys
+---
+---@class UI
+---@field buffer UIBufferOpts?
+---@field toggleterm TogggleTermUIOpts?
+---
+
+---@class ToggleTermOpts
+---@field default_group_id number? (default: 1)
+
+---@class Settings
+---@field ui UI?
+---@field toggleterm ToggleTermOpts
+---@field enable boolean? Enable/Disable running tasks (default: true)
+---@field border string? Style for vim.ui.selector (default: "rounded")
+---@field style string? Style for window (default: "minimal")
+---@field show_command boolean? Show command to run in menu (default: false)
+---@field show_command_in_output boolean? Show command in output (default: true)
+---@field patterns table? List of folders that indicate the root directory of a project (default: {".git", ".svn"})
+---@field output_results string?: Where to render the output. buffer or toggleterm (default: buffer)
+---@field last_first boolean?: Make the last chosen value the default one on next run (default: false)
+---@field extensions table?: Configuration for all plugins (default: nil)
+---@field run_groups table?: Groups of plugins to run (default: nil)
+---@field overrides table?: Table used for renaming/translating commands to new commands (default: nil)
+---
+---@param options Settings: Configuration options
+---
+---@usage `require("greyjoy").setup({})`
+---
 greyjoy.setup = function(options)
     setmetatable(greyjoy, { __newindex = config.set, __index = config.get })
 
@@ -42,6 +220,10 @@ function greyjoy.__in_group(group_name, plugin_name)
     return true
 end
 
+---@param name string: Name of extension to load
+---
+---@usage `require("greyjoy").load_extension("generic")`
+---
 function greyjoy.load_extension(name)
     return _extensions.load(name)
 end
@@ -303,7 +485,6 @@ greyjoy.run = function(arg, method)
             or pluginname == p
             or greyjoy.__in_group(pluginname, p)
         then
-            -- greyjoy.run_group_map[pluginname][p] then
             -- Do global based
             if v.type == "global" then
                 local output = v.parse(fileobj)

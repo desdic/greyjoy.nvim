@@ -4,6 +4,7 @@ local eq = assert.are.same
 describe("makefile extension", function()
     it("runs make", function()
         local makefile = require("greyjoy._extensions.makefile")
+        makefile.setup({})
         local uv = vim.uv
 
         eq(makefile.exports, utils.if_nil(makefile.exports, false))

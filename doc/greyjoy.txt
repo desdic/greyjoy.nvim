@@ -1,0 +1,453 @@
+==============================================================================
+------------------------------------------------------------------------------
+
+Greyjoy is highly customizable and plugable runner for Neovim
+
+Usage ~
+Feature rich example using the Lazy plugin manager
+
+{
+    "desdic/greyjoy.nvim",
+    keys = {
+        { "<Leader>gr", "<cmd>GreyjoyTelescope<CR>", desc = "[G]reyjoy [r]un" },
+        { "<Leader>gg", "<cmd>GreyjoyTelescope fast<CR>", desc = "[G]reyjoy fast [g]roup" },
+        { "<Leader>ge", "<cmd>Greyedit<CR>", desc = "[G]reyjoy [r]un" },
+    },
+    dependencies = {
+        { "akinsho/toggleterm.nvim" },
+    },
+    cmd = { "Greyjoy", "Greyedit", "GreyjoyTelescope" },
+    config = function()
+        local greyjoy = require("greyjoy")
+        local condition = require("greyjoy.conditions")
+
+        local tmpmakename = nil
+
+        local my_pre_hook = function(command)
+            tmpmakename = os.tmpname()
+            table.insert(command.command, "2>&1")
+            table.insert(command.command, "|")
+            table.insert(command.command, "tee")
+            table.insert(command.command, tmpmakename)
+        end
+
+        -- A bit hacky solution to checking when tee has flushed its file
+        local my_post_hook = function()
+            vim.cmd(":cexpr []")
+            local cmd = { "inotifywait", "-e", "close_write", tmpmakename }
+
+            local job_id = vim.fn.jobstart(cmd, {
+                stdout_buffered = true,
+                on_exit = function(_, _, _)
+                    if tmpmakename ~= nil then
+                        vim.cmd(":cgetfile " .. tmpmakename)
+                        os.remove(tmpmakename)
+                    end
+                end,
+            })
+
+            if job_id <= 0 then
+                vim.notify("Failed to start inotifywait!")
+            end
+        end
+
+        greyjoy.setup({
+            output_results = "toggleterm",
+            last_first = true,
+            extensions = {
+                generic = {
+                    commands = {
+                        ["run {filename}"] = { command = { "python3", "{filename}" }, filetype = "python" },
+                        ["run main.go"] = {
+                            command = { "go", "run", "main.go" },
+                            filetype = "go",
+                            filename = "main.go",
+                        },
+                        ["build main.go"] = {
+                            command = { "go", "build", "main.go" },
+                            filetype = "go",
+                            filename = "main.go",
+                        },
+                        ["zig build"] = {
+                            command = { "zig", "build" },
+                            filetype = "zig",
+                        },
+                        ["cmake --build target"] = {
+                            command = { "cd", "{rootdir}", "&&", "cmake", "--build", "{rootdir}/target" },
+                            condition = function(n)
+                                return condition.file_exists("CMakeLists.txt", n)
+                                    and condition.directory_exists("target", n)
+                            end,
+                        },
+                        ["cmake -S . -B target"] = {
+                            command = { "cd", "{rootdir}", "&&", "cmake", "-S", ".", "-B", "{rootdir}/target" },
+                            condition = function(n)
+                                return condition.file_exists("CMakeLists.txt", n)
+                                    and not condition.directory_exists("target", n)
+                            end,
+                        },
+                        ["build-login"] = {
+                            command = { "kitchenlogin.sh" },
+                            condition = function(n)
+                                return condition.directory_exists("kitchen-build/.kitchen", n)
+                            end,
+                        },
+                    },
+                },
+                kitchen = {
+                    group_id = 2,
+                    targets = { "converge", "verify", "destroy", "test", "login" },
+                    include_all = false,
+                },
+                docker_compose = { group_id = 3 },
+                cargo = { group_id = 4 },
+                makefile = {
+                    pre_hook = my_pre_hook,
+                    post_hook = my_post_hook,
+                },
+            },
+            run_groups = { fast = { "generic", "makefile", "cargo", "docker_compose" } },
+        })
+
+        greyjoy.load_extension("generic")
+        greyjoy.load_extension("makefile")
+        greyjoy.load_extension("kitchen")
+        greyjoy.load_extension("cargo")
+        greyjoy.load_extension("docker_compose")
+    end,
+}
+
+------------------------------------------------------------------------------
+Class ~
+{UIBufferOpts}
+Fields ~
+{width} `(number?)`
+{height} `(number?)`
+
+Class ~
+{TogggleTermUIOpts}
+{size} `(table?)`
+
+Class ~
+{TelescopeOptsKeys}
+{select} `(string?)`
+{edit} `(string?)`
+
+Class ~
+{TelescopeOpts}
+{keys} TelescopeOptsKeys
+
+Class ~
+{UI}
+{buffer} UIBufferOpts?
+{toggleterm} TogggleTermUIOpts?
+
+------------------------------------------------------------------------------
+Class ~
+{ToggleTermOpts}
+Fields ~
+{default_group_id} `(number?)` (default: 1)
+
+------------------------------------------------------------------------------
+                                                               *greyjoy.setup()*
+                           `greyjoy.setup`({options})
+Class ~
+{Settings}
+Fields ~
+{ui} UI?
+{toggleterm} ToggleTermOpts
+{enable} `(boolean?)` Enable/Disable running tasks (default: true)
+{border} `(string?)` Style for vim.ui.selector (default: "rounded")
+{style} `(string?)` Style for window (default: "minimal")
+{show_command} `(boolean?)` Show command to run in menu (default: false)
+{show_command_in_output} `(boolean?)` Show command in output (default: true)
+{patterns} `(table?)` List of folders that indicate the root directory of a project (default: {".git", ".svn"})
+{output_results} `(string?:)` Where to render the output. buffer or toggleterm (default: buffer)
+{last_first} `(boolean?:)` Make the last chosen value the default one on next run (default: false)
+{extensions} `(table?:)` Configuration for all plugins (default: nil)
+{run_groups} `(table?:)` Groups of plugins to run (default: nil)
+{overrides} `(table?:)` Table used for renaming/translating commands to new commands (default: nil)
+
+Parameters ~
+{options} Settings: Configuration options
+
+Usage ~
+`require("greyjoy").setup({})`
+
+------------------------------------------------------------------------------
+                                                      *greyjoy.load_extension()*
+                        `greyjoy.load_extension`({name})
+Parameters ~
+{name} `(string:)` Name of extension to load
+
+Usage ~
+`require("greyjoy").load_extension("generic")`
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                    *conditions*
+                                  `Conditions`
+
+Condition helper functions
+
+------------------------------------------------------------------------------
+                                                      *Conditions.file_exists()*
+                  `Conditions.file_exists`({filename}, {obj})
+Parameters ~
+{filename} `(string)` Filename to look for
+{obj} `(table)` Fileobject passed down from condition function
+Return ~
+`(boolean)`
+
+Usage ~
+`require("greyjoy.conditions").file_exists("CMakeLists.txt", fileobj)`
+
+------------------------------------------------------------------------------
+                                                 *Conditions.directory_exists()*
+                `Conditions.directory_exists`({dirname}, {obj})
+Parameters ~
+{dirname} `(string)` Filename to look for
+{obj} `(table)` Fileobject passed down from condition function
+Return ~
+`(boolean)`
+
+Usage ~
+`require("greyjoy.conditions").directory_exists("mybindir", fileobj)`
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                         *cargo*
+
+The cargo extension builds common usage for the cargo command
+
+Usage ~
+default configuration for the cargo extention
+
+its triggered by the presence of Cargo.toml
+
+cargo = {
+  group_id = nil, -- group id for toggleterm
+  targets = {
+      { "build" },
+      { "build", "--release" },
+      { "check" },
+      { "clean" },
+      { "update" },
+      { "run" },
+  },
+  pre_hook = nil, -- run before executing command
+  post_hook = nil, -- run after executing command
+}
+
+------------------------------------------------------------------------------
+                                                                 *Cargo.setup()*
+                            `Cargo.setup`({config})
+Class ~
+{CargoOpts}
+Fields ~
+{group_id} `(number?:)` Toggleterm terminal group id. (default: nil)
+{targets} `(table?:)` Table with commands for cargo
+{pre_hook} `(function?:)` Function to run before running command. (default: nil)
+{post_hook} `(function?:)` Function to run after running command. (default: nil)
+
+Parameters ~
+{config} CargoOpts?: Configuration options
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                *docker_compose*
+
+The docker_compose extension scans the docker-compose.yml for targets
+
+Usage ~
+default configuration for the docker_compose extention
+
+its triggered by the presence of docker-compose.yml
+
+docker_compose = {
+  cmd = "/usr/bin/docker-compose", -- path to docker-compose
+  shell = "/bin/bash", -- shell when logging into a container
+  pre_hook = nil, -- run before executing command
+  post_hook = nil, -- run after executing command
+}
+
+------------------------------------------------------------------------------
+                                                         *DockerCompose.setup()*
+                        `DockerCompose.setup`({config})
+Class ~
+{DocerComposeOpts}
+Fields ~
+{group_id} `(number?:)` Toggleterm terminal group id. (default: nil)
+{cmd} `(string?:)` Path to docker-compose command. (default: /usr/bin/docker-compose)
+{shell} `(string?:)` Shell to use for login in container. (default: /bin/bash)
+{pre_hook} `(function?:)` Function to run before running command. (default: nil)
+{post_hook} `(function?:)` Function to run after running command. (default: nil)
+
+Parameters ~
+{config} DocerComposeOpts?: Configuration options
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                       *generic*
+
+The generic extension
+
+Usage ~
+default configuration for the generic extension
+
+generic = {
+  commands = {},
+  pre_hook = nil, -- run before executing command
+  post_hook = nil, -- run after executing command
+}
+
+------------------------------------------------------------------------------
+Class ~
+{CommandOpts}
+Fields ~
+{command} `(table:)` Command with parameters to run (example: command = { "go", "run", "main.go" })
+{filetype} `(string?:)` Trigger on a specific filetype. (example: filetype = "go")
+{filename} `(string?:)` Trigger on a specific filename. (example: filetype = "main.go")
+{condition} `(function?:)` Trigger via a function.
+
+The command table supports a few variables/substituions where name is replaced.
+
+{filename} is replaced with current filename
+{filepath} is replaced with current filepath
+{rootdir} is the path for the root directory
+
+Having multiple conditions like filetype and filename will do an `and` operation so both requirements has to be met before it triggers.
+Examples:
+    commands = {
+        ["run {filename}"] = {
+            command = { "python3", "{filename}" },
+            filetype = "python",
+        },
+        ["run main.go"] = {
+            command = { "go", "run", "main.go" },
+            filetype = "go",
+            filename = "main.go",
+        },
+        ["cmake --build target"] = {
+            command = { "cd", "{rootdir}", "&&", "cmake", "--build", "{rootdir}/target" },
+            condition = function(fileobj)
+                return require("greyjoy.conditions").file_exists("CMakeLists.txt", fileobj)
+                    and require("greyjoy.conditions").directory_exists("target", fileobj)
+            end,
+        },
+
+------------------------------------------------------------------------------
+                                                               *Generic.setup()*
+                           `Generic.setup`({config})
+Class ~
+{GenericOpts}
+Fields ~
+{group_id} `(number?:)` Toggleterm terminal group id. (default: nil)
+{commands} CommandOpts?: Configuration of commands and when to run. (default: `(nil))`
+{pre_hook} `(function?:)` Function to run before running command. (default: nil)
+{post_hook} `(function?:)` Function to run after running command. (default: nil)
+
+Parameters ~
+{config} GenericOpts?: Configuration options
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                       *kitchen*
+
+The kitchen extension is a plugin for running test kitchen (https://docs.chef.io/workstation/kitchen/)
+
+Usage ~
+default configuration for the kitchen extention
+
+its triggered by the presence of Makefile
+
+kitchen = {
+  group_id = nil, -- group id for toggleterm
+  targets = {"converge", "verify", "test", "destroy", "login"}, -- targets
+  include_all = false, -- include all in list
+  pre_hook = nil, -- run before executing command
+  post_hook = nil, -- run after executing command
+}
+
+------------------------------------------------------------------------------
+                                                               *Kitchen.setup()*
+                           `Kitchen.setup`({config})
+Class ~
+{KitchenOpts}
+Fields ~
+{group_id} `(number?:)` Toggleterm terminal group id. (default: nil)
+{targets} `(table?:)` Table with commands for test kitchen
+{include_all} `(boolean?:)` Add the `all` target in test kitchen (default: false)
+{pre_hook} `(function?:)` Function to run before running command. (default: nil)
+{post_hook} `(function?:)` Function to run after running command. (default: nil)
+
+Parameters ~
+{config} KitchenOpts?: Configuration options
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                      *makefile*
+
+The makefile extension scans the makefile for targets
+
+Usage ~
+default configuration for the makefile extention
+
+makefile = {
+  group_id = nil, -- group id for toggleterm
+  pre_hook = nil, -- run before executing command
+  post_hook = nil, -- run after executing command
+}
+
+------------------------------------------------------------------------------
+                                                              *Makefile.setup()*
+                           `Makefile.setup`({config})
+Class ~
+{MakefileOpts}
+Fields ~
+{group_id} `(number?:)` Toggleterm terminal group id. (default: nil)
+{pre_hook} `(function?:)` Function to run before running command
+{post_hook} `(function?:)` Function to run after running command
+
+Parameters ~
+{config} MakefileOpts?: Configuration options
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                                  *vscode_tasks*
+
+The vscode_tasks extension looks for tasks defined in tasks.json
+
+Usage ~
+default configuration for the vscode_tasks
+
+its triggered by the presence of .vscode/tasks.json
+
+vscode_tasks = {
+  group_id = nil, -- group id for toggleterm
+  pre_hook = nil, -- run before executing command
+  post_hook = nil, -- run after executing command
+}
+
+------------------------------------------------------------------------------
+                                                            *VSCodeTask.setup()*
+                          `VSCodeTask.setup`({config})
+Class ~
+{VSCodeTasksOpts}
+Fields ~
+{group_id} `(number?:)` Toggleterm terminal group id. (default: nil)
+{pre_hook} `(function?:)` Function to run before running command. (default: nil)
+{post_hook} `(function?:)` Function to run after running command. (default: nil)
+
+Parameters ~
+{config} VSCodeTasksOpts?: Configuration options
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:
