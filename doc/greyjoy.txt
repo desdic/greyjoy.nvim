@@ -32,6 +32,8 @@ Feature rich example using the Lazy plugin manager
         end
 
         -- A bit hacky solution to checking when tee has flushed its file
+        -- but this mimics the behaviour of `:make` and its to demonstrate how
+        -- hooks can be used (requires inotifywait installed)
         local my_post_hook = function()
             vim.cmd(":cexpr []")
             local cmd = { "inotifywait", "-e", "close_write", tmpmakename }
@@ -50,6 +52,26 @@ Feature rich example using the Lazy plugin manager
                 vim.notify("Failed to start inotifywait!")
             end
         end
+
+         -- Example of autocmds
+         local my_group =
+             vim.api.nvim_create_augroup("MyCustomEventGroup", { clear = true })
+
+         vim.api.nvim_create_autocmd("User", {
+             pattern = "GreyjoyBeforeExec",
+             group = my_group,
+             callback = function()
+                 print("Before run!")
+             end,
+         })
+
+         vim.api.nvim_create_autocmd("User", {
+             pattern = "GreyjoyAfterExec",
+             group = my_group,
+             callback = function()
+                 print("After run")
+             end,
+         })
 
         greyjoy.setup({
             output_results = "toggleterm",
@@ -207,7 +229,7 @@ Usage ~
                                                  *Conditions.directory_exists()*
                 `Conditions.directory_exists`({dirname}, {obj})
 Parameters ~
-{dirname} `(string)` Filename to look for
+{dirname} `(string)` Dirname to look for
 {obj} `(table)` Fileobject passed down from condition function
 Return ~
 `(boolean)`
