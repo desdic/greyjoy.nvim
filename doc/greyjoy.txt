@@ -7,6 +7,7 @@ Greyjoy is highly customizable and plugable runner for Neovim
 Usage ~
 Feature rich example using the Lazy plugin manager
 
+> lua
 {
     "desdic/greyjoy.nvim",
     keys = {
@@ -241,7 +242,7 @@ Usage ~
 
 ==============================================================================
 ------------------------------------------------------------------------------
-                                                                         *cargo*
+                                                                 *greyjoy.cargo*
 
 The cargo extension builds common usage for the cargo command
 
@@ -250,6 +251,7 @@ default configuration for the cargo extention
 
 its triggered by the presence of Cargo.toml
 
+> lua
 cargo = {
   group_id = nil, -- group id for toggleterm
   targets = {
@@ -281,7 +283,7 @@ Parameters ~
 
 ==============================================================================
 ------------------------------------------------------------------------------
-                                                                *docker_compose*
+                                                        *greyjoy.docker_compose*
 
 The docker_compose extension scans the docker-compose.yml for targets
 
@@ -290,6 +292,7 @@ default configuration for the docker_compose extention
 
 its triggered by the presence of docker-compose.yml
 
+> lua
 docker_compose = {
   cmd = "/usr/bin/docker-compose", -- path to docker-compose
   shell = "/bin/bash", -- shell when logging into a container
@@ -315,13 +318,14 @@ Parameters ~
 
 ==============================================================================
 ------------------------------------------------------------------------------
-                                                                       *generic*
+                                                               *greyjoy.generic*
 
 The generic extension
 
 Usage ~
 default configuration for the generic extension
 
+> lua
 generic = {
   commands = {},
   pre_hook = nil, -- run before executing command
@@ -380,7 +384,7 @@ Parameters ~
 
 ==============================================================================
 ------------------------------------------------------------------------------
-                                                                       *kitchen*
+                                                               *greyjoy.kitchen*
 
 The kitchen extension is a plugin for running test kitchen (https://docs.chef.io/workstation/kitchen/)
 
@@ -389,6 +393,7 @@ default configuration for the kitchen extention
 
 its triggered by the presence of Makefile
 
+> lua
 kitchen = {
   group_id = nil, -- group id for toggleterm
   targets = {"converge", "verify", "test", "destroy", "login"}, -- targets
@@ -415,13 +420,14 @@ Parameters ~
 
 ==============================================================================
 ------------------------------------------------------------------------------
-                                                                      *makefile*
+                                                              *greyjoy.makefile*
 
 The makefile extension scans the makefile for targets
 
 Usage ~
 default configuration for the makefile extention
 
+> lua
 makefile = {
   group_id = nil, -- group id for toggleterm
   pre_hook = nil, -- run before executing command
@@ -444,7 +450,7 @@ Parameters ~
 
 ==============================================================================
 ------------------------------------------------------------------------------
-                                                                  *vscode_tasks*
+                                                          *greyjoy.vscode_tasks*
 
 The vscode_tasks extension looks for tasks defined in tasks.json
 
@@ -453,6 +459,7 @@ default configuration for the vscode_tasks
 
 its triggered by the presence of .vscode/tasks.json
 
+> lua
 vscode_tasks = {
   group_id = nil, -- group id for toggleterm
   pre_hook = nil, -- run before executing command

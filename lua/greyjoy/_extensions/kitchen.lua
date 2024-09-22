@@ -5,6 +5,7 @@
 ---
 --- its triggered by the presence of Makefile
 ---
+--- > lua
 --- kitchen = {
 ---   group_id = nil, -- group id for toggleterm
 ---   targets = {"converge", "verify", "test", "destroy", "login"}, -- targets
@@ -12,7 +13,8 @@
 ---   pre_hook = nil, -- run before executing command
 ---   post_hook = nil, -- run after executing command
 --- }
----@tag kitchen
+---
+---@tag greyjoy.kitchen
 
 local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then

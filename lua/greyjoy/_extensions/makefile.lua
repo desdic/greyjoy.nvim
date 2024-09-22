@@ -3,12 +3,15 @@
 ---
 ---@usage default configuration for the makefile extention
 ---
+--- > lua
 --- makefile = {
 ---   group_id = nil, -- group id for toggleterm
 ---   pre_hook = nil, -- run before executing command
 ---   post_hook = nil, -- run after executing command
 --- }
----@tag makefile
+---
+---@tag greyjoy.makefile
+
 local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then
     vim.notify(

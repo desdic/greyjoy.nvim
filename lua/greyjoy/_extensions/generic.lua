@@ -3,12 +3,14 @@
 ---
 ---@usage default configuration for the generic extension
 ---
+--- > lua
 --- generic = {
 ---   commands = {},
 ---   pre_hook = nil, -- run before executing command
 ---   post_hook = nil, -- run after executing command
 --- }
----@tag generic
+---
+---@tag greyjoy.generic
 
 local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then

@@ -5,13 +5,16 @@
 ---
 --- its triggered by the presence of docker-compose.yml
 ---
+--- > lua
 --- docker_compose = {
 ---   cmd = "/usr/bin/docker-compose", -- path to docker-compose
 ---   shell = "/bin/bash", -- shell when logging into a container
 ---   pre_hook = nil, -- run before executing command
 ---   post_hook = nil, -- run after executing command
 --- }
----@tag docker_compose
+---
+---@tag greyjoy.docker_compose
+
 local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then
     vim.notify(
