@@ -3,6 +3,7 @@
 ---
 ---@usage Feature rich example using the Lazy plugin manager
 ---
+--- > lua
 --- {
 ---     "desdic/greyjoy.nvim",
 ---     keys = {
@@ -135,6 +136,7 @@
 ---         greyjoy.load_extension("docker_compose")
 ---     end,
 --- }
+---
 ---@tag greyjoy.nvim
 
 local greyjoy = {}

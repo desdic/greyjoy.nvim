@@ -5,12 +5,14 @@
 ---
 --- its triggered by the presence of .vscode/tasks.json
 ---
+--- > lua
 --- vscode_tasks = {
 ---   group_id = nil, -- group id for toggleterm
 ---   pre_hook = nil, -- run before executing command
 ---   post_hook = nil, -- run after executing command
 --- }
----@tag vscode_tasks
+---
+---@tag greyjoy.vscode_tasks
 
 -- Parse vscode tasks.json version 2 files
 local ok, greyjoy = pcall(require, "greyjoy")

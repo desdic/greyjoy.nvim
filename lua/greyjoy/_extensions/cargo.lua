@@ -5,6 +5,7 @@
 ---
 --- its triggered by the presence of Cargo.toml
 ---
+--- > lua
 --- cargo = {
 ---   group_id = nil, -- group id for toggleterm
 ---   targets = {
@@ -18,7 +19,9 @@
 ---   pre_hook = nil, -- run before executing command
 ---   post_hook = nil, -- run after executing command
 --- }
----@tag cargo
+---
+---@tag greyjoy.cargo
+
 local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then
     vim.notify(
