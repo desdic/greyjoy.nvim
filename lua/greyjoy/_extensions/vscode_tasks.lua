@@ -1,3 +1,17 @@
+---
+--- The vscode_tasks extension looks for tasks defined in tasks.json
+---
+---@usage default configuration for the vscode_tasks
+---
+--- its triggered by the presence of .vscode/tasks.json
+---
+--- vscode_tasks = {
+---   group_id = nil, -- group id for toggleterm
+---   pre_hook = nil, -- run before executing command
+---   post_hook = nil, -- run after executing command
+--- }
+---@tag vscode_tasks
+
 -- Parse vscode tasks.json version 2 files
 local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then
@@ -9,9 +23,9 @@ if not ok then
     return
 end
 
-local M = {}
+local VSCodeTask = {}
 
-M.parse_v2 = function(content, filepath)
+VSCodeTask.parse_v2 = function(content, filepath)
     if not content["tasks"] then
         return {}
     end
@@ -26,6 +40,9 @@ M.parse_v2 = function(content, filepath)
                 elem["command"] = { v["command"] }
                 elem["path"] = filepath
                 elem["plugin"] = "vscode_tasks"
+                elem["group_id"] = VSCodeTask.config.group_id or nil
+                elem["pre_hook"] = VSCodeTask.config.pre_hook or nil
+                elem["post_hook"] = VSCodeTask.config.post_hook or nil
 
                 if v["args"] then
                     for _, value in pairs(v["args"]) do
@@ -41,7 +58,7 @@ M.parse_v2 = function(content, filepath)
     return filecommands
 end
 
-M.read = function(filename)
+VSCodeTask.read = function(filename)
     local fd = io.open(filename, "r")
     if not fd then
         return nil
@@ -59,7 +76,7 @@ M.read = function(filename)
     return jsoncontent
 end
 
-M.parse = function(fileinfo)
+VSCodeTask.parse = function(fileinfo)
     if type(fileinfo) ~= "table" then
         vim.notify(
             "fileinfo must be a table",
@@ -72,7 +89,7 @@ M.parse = function(fileinfo)
     local filename = fileinfo.filename
     local filepath = fileinfo.filepath
 
-    local content = M.read(filepath .. "/" .. filename)
+    local content = VSCodeTask.read(filepath .. "/" .. filename)
     if not content then
         return {}
     end
@@ -83,14 +100,24 @@ M.parse = function(fileinfo)
         return {}
     end
 
-    return M.parse_v2(content, filepath)
+    return VSCodeTask.parse_v2(content, filepath)
+end
+
+---@class VSCodeTasksOpts
+---@field group_id number?: Toggleterm terminal group id. (default: nil)
+---@field pre_hook function?: Function to run before running command. (default: nil)
+---@field post_hook function?: Function to run after running command. (default: nil)
+---
+---@param config VSCodeTasksOpts?: Configuration options
+VSCodeTask.setup = function(config)
+    VSCodeTask.config = config
 end
 
 return greyjoy.register_extension({
-    setup = function(_) end,
+    setup = VSCodeTask.setup,
     exports = {
         type = "file",
         files = { ".vscode/tasks.json" },
-        parse = M.parse,
+        parse = VSCodeTask.parse,
     },
 })

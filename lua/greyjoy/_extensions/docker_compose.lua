@@ -1,3 +1,17 @@
+---
+--- The docker_compose extension scans the docker-compose.yml for targets
+---
+---@usage default configuration for the docker_compose extention
+---
+--- its triggered by the presence of docker-compose.yml
+---
+--- docker_compose = {
+---   cmd = "/usr/bin/docker-compose", -- path to docker-compose
+---   shell = "/bin/bash", -- shell when logging into a container
+---   pre_hook = nil, -- run before executing command
+---   post_hook = nil, -- run after executing command
+--- }
+---@tag docker_compose
 local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then
     vim.notify(
@@ -19,9 +33,9 @@ end
 
 local health = vim.health
 
-local M = {}
+local DockerCompose = {}
 
-M.parse = function(fileinfo)
+DockerCompose.parse = function(fileinfo)
     if type(fileinfo) ~= "table" then
         vim.notify(
             "fileinfo must be a table",
@@ -36,7 +50,7 @@ M.parse = function(fileinfo)
     local elements = {}
 
     local pipe = io.popen(
-        M.config["cmd"]
+        DockerCompose.config["cmd"]
             .. " -f "
             .. filename
             .. " ps --filter 'status=running' --format '{{.Service}}' 2>/dev/null"
@@ -58,14 +72,18 @@ M.parse = function(fileinfo)
         if v ~= "" then
             local elem = {}
             elem["name"] = "docker-compose exec " .. v
-            elem["command"] =
-                { M.config["cmd"], "exec", "-it", v, M.config["shell"] }
+            elem["command"] = {
+                DockerCompose.config["cmd"],
+                "exec",
+                "-it",
+                v,
+                DockerCompose.config["shell"],
+            }
             elem["path"] = filepath
             elem["plugin"] = "docker_compose"
-
-            if M.config["group_id"] then
-                elem["group_id"] = M.config["group_id"]
-            end
+            elem["group_id"] = DockerCompose.config.group_id or nil
+            elem["pre_hook"] = DockerCompose.config.pre_hook or nil
+            elem["post_hook"] = DockerCompose.config.post_hook or nil
 
             table.insert(elements, elem)
         end
@@ -74,8 +92,8 @@ M.parse = function(fileinfo)
     return elements
 end
 
-M.health = function()
-    local cmd = M.config["cmd"]:match("%S+")
+DockerCompose.health = function()
+    local cmd = DockerCompose.config["cmd"]:match("%S+")
     local basename = string.gsub(cmd, "(.*/)(.*)", "%2")
     if vim.fn.executable(basename) == 1 then
         health.ok("`" .. basename .. "`: Ok")
@@ -86,25 +104,31 @@ M.health = function()
     end
 end
 
-M.setup = function(config)
-    M.config = config
+---@class DocerComposeOpts
+---@field group_id number?: Toggleterm terminal group id. (default: nil)
+---@field cmd string?: Path to docker-compose command. (default: /usr/bin/docker-compose)
+---@field shell string?: Shell to use for login in container. (default: /bin/bash)
+---@field pre_hook function?: Function to run before running command. (default: nil)
+---@field post_hook function?: Function to run after running command. (default: nil)
+---
+---@param config DocerComposeOpts?: Configuration options
+DockerCompose.setup = function(config)
+    DockerCompose.config = config
 
-    if not M.config.cmd then
-        M.config["cmd"] = "/usr/bin/docker-compose"
+    if not DockerCompose.config.cmd then
+        DockerCompose.config["cmd"] = "/usr/bin/docker-compose"
     end
-    if not M.config.shell then
-        M.config["shell"] = "/bin/bash"
+    if not DockerCompose.config.shell then
+        DockerCompose.config["shell"] = "/bin/bash"
     end
-
-    M.config.include_all = utils.if_nil(M.config.include_all, false)
 end
 
 return greyjoy.register_extension({
-    setup = M.setup,
-    health = M.health,
+    setup = DockerCompose.setup,
+    health = DockerCompose.health,
     exports = {
         type = "file",
         files = { "docker-compose.yml" },
-        parse = M.parse,
+        parse = DockerCompose.parse,
     },
 })

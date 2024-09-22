@@ -1,3 +1,24 @@
+---
+--- The cargo extension builds common usage for the cargo command
+---
+---@usage default configuration for the cargo extention
+---
+--- its triggered by the presence of Cargo.toml
+---
+--- cargo = {
+---   group_id = nil, -- group id for toggleterm
+---   targets = {
+---       { "build" },
+---       { "build", "--release" },
+---       { "check" },
+---       { "clean" },
+---       { "update" },
+---       { "run" },
+---   },
+---   pre_hook = nil, -- run before executing command
+---   post_hook = nil, -- run after executing command
+--- }
+---@tag cargo
 local ok, greyjoy = pcall(require, "greyjoy")
 if not ok then
     vim.notify(
@@ -10,9 +31,9 @@ end
 
 local health = vim.health
 
-local M = {}
+local Cargo = {}
 
-M.parse = function(fileinfo)
+Cargo.parse = function(fileinfo)
     if type(fileinfo) ~= "table" then
         vim.notify(
             "fileinfo must be a table",
@@ -25,8 +46,8 @@ M.parse = function(fileinfo)
     local filepath = fileinfo.filepath
     local elements = {}
 
-    if M.config.targets then
-        for _, v in ipairs(M.config.targets) do
+    if Cargo.config.targets then
+        for _, v in ipairs(Cargo.config.targets) do
             local elem = {}
             local name = "cargo"
             local cmd = { "cargo" }
@@ -40,6 +61,9 @@ M.parse = function(fileinfo)
             elem["command"] = cmd
             elem["path"] = filepath
             elem["plugin"] = "cargo"
+            elem["group_id"] = Cargo.config.group_id or nil
+            elem["pre_hook"] = Cargo.config.pre_hook or nil
+            elem["post_hook"] = Cargo.config.post_hook or nil
 
             table.insert(elements, elem)
         end
@@ -48,7 +72,7 @@ M.parse = function(fileinfo)
     return elements
 end
 
-M.health = function()
+Cargo.health = function()
     if vim.fn.executable("cargo") == 1 then
         health.ok("`cargo`: Ok")
     else
@@ -56,23 +80,32 @@ M.health = function()
     end
 end
 
-return greyjoy.register_extension({
-    setup = function(config)
-        M.config = config
+---@class CargoOpts
+---@field group_id number?: Toggleterm terminal group id. (default: nil)
+---@field targets table?: Table with commands for cargo
+---@field pre_hook function?: Function to run before running command. (default: nil)
+---@field post_hook function?: Function to run after running command. (default: nil)
+---
+---@param config CargoOpts?: Configuration options
+Cargo.setup = function(config)
+    Cargo.config = config
 
-        if not M.config.targets then
-            M.config = {
-                targets = {
-                    { "build" },
-                    { "build", "--release" },
-                    { "check" },
-                    { "clean" },
-                    { "update" },
-                    { "run" },
-                },
-            }
-        end
-    end,
-    health = M.health,
-    exports = { type = "file", files = { "Cargo.toml" }, parse = M.parse },
+    if not Cargo.config.targets then
+        Cargo.config = {
+            targets = {
+                { "build" },
+                { "build", "--release" },
+                { "check" },
+                { "clean" },
+                { "update" },
+                { "run" },
+            },
+        }
+    end
+end
+
+return greyjoy.register_extension({
+    setup = Cargo.setup,
+    health = Cargo.health,
+    exports = { type = "file", files = { "Cargo.toml" }, parse = Cargo.parse },
 })
