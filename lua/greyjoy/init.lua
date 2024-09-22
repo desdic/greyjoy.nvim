@@ -135,6 +135,7 @@
 ---         greyjoy.load_extension("docker_compose")
 ---     end,
 --- }
+---@tag greyjoy.nvim
 
 local greyjoy = {}
 local config = require("greyjoy.config")
