@@ -1,4 +1,5 @@
--- Defaults
+--- Default options:
+---@eval return MiniDoc.afterlines_to_code(MiniDoc.current.eval_section)
 local defaults = {
     ui = {
         buffer = { -- setting for buffer output
@@ -30,16 +31,17 @@ local defaults = {
     },
     enable = true, -- enable/disable plugin
     border = "rounded", -- default borders
-    style = "minimal", -- default style
+    style = "minimal", -- default style for vim.ui.selector
     show_command = false, -- show full command when selection
     show_command_in_output = true, -- Show the command that was running in output
-    patterns = { ".git", ".svn" },
-    output_result = "buffer",
+    patterns = { ".git", ".svn" }, -- patterns to find the root of the project
+    output_result = "buffer", -- buffer or to toggleterm
     default_shell = vim.o.shell, -- default shell to run tasks in
-    extensions = {},
+    extensions = {}, -- no extensions are loaded per default
     last_first = false, -- make sure last option is first on next run, not persistant
     overrides = {}, -- make global overrides
 }
+--minidoc_afterlines_end
 
 -- Set/Change options
 local function set(_, key, value)
