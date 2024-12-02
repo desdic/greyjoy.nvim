@@ -21,6 +21,12 @@ local defaults = {
                 edit = "<C-e>", -- CTRL-e
             },
         },
+        fzf = {
+            keys = {
+                select = "enter", -- enter as fzf wants it
+                edit = "ctrl-e", -- <C-e> as fzf wants it
+            },
+        },
     },
     toggleterm = {
         -- default_group_id can be a number or a function that takes a string as parameter.

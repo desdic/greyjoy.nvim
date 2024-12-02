@@ -8,7 +8,7 @@
 
 [![Greyjoy.nvim demo](http://img.youtube.com/vi/9AcNjkqROIM/0.jpg)](http://www.youtube.com/watch?v=9AcNjkqROIM "Greyjoy.nvim demo")
 
-Greyjoy per default uses vim.ui.select so the settings from (telescope, dressing etc.) menu will reflect it. But there is also a telescope only version that uses async which makes the UI feel faster.
+Greyjoy per default uses vim.ui.select so the settings from (telescope, dressing etc.) menu will reflect it. But there is also support for telescope (requires [telescope](https://github.com/nvim-telescope/telescope.nvim)) and a fzf (requires [fzf-lua](https://github.com/ibhagwan/fzf-lua))
 
 Integration with [toggleterm](https://github.com/akinsho/toggleterm.nvim) is also provided.
 

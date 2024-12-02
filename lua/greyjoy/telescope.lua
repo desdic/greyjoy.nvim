@@ -8,6 +8,7 @@ local actions = require("telescope.actions")
 
 local utils = require("greyjoy.utils")
 local greyjoy = require("greyjoy")
+local callback = require("greyjoy.callback")
 
 local all_results = {}
 local opts = {}
@@ -54,8 +55,6 @@ local translate = function(obj)
 end
 
 greytelescope.run = function(arg)
-    local bufname = vim.api.nvim_buf_get_name(0)
-    local filetype = vim.bo.filetype
     all_results = {}
 
     local picker = pickers.new(opts, {
@@ -70,7 +69,7 @@ greytelescope.run = function(arg)
                 end
             end,
         },
-        attach_mappings = function(prompt_bufnr, map)
+        attach_mappings = function(_, map)
             map(
                 "i",
                 greyjoy.ui.telescope.keys.select,
@@ -130,40 +129,13 @@ greytelescope.run = function(arg)
         picker:refresh(generate_new_finder(), opts)
     end
 
-    local pluginname = arg or ""
-    local fileobj = utils.new_file_obj(greyjoy.patterns, bufname, filetype)
-    local rootdir = fileobj.rootdir
-
-    for plugin, obj in pairs(greyjoy.extensions) do
-        local plugin_obj = obj
-        local plugin_type = plugin_obj.type
-
-        if
-            pluginname == ""
-            or pluginname == plugin
-            or greyjoy.__in_group(pluginname, plugin)
-        then
-            vim.schedule(function()
-                if plugin_type == "global" then
-                    local output = plugin_obj.parse(fileobj)
-                    handle_new_results(output)
-                else
-                    if rootdir then
-                        for _, file in pairs(plugin_obj.files) do
-                            if utils.file_exists(rootdir .. "/" .. file) then
-                                local fileinfo = {
-                                    filename = file,
-                                    filepath = rootdir,
-                                }
-                                local output = plugin_obj.parse(fileinfo)
-                                handle_new_results(output)
-                            end
-                        end
-                    end
-                end
-            end)
-        end
+    local function telescopecallback(output)
+        vim.schedule(function()
+            handle_new_results(output)
+        end)
     end
+
+    callback.extensions(arg, telescopecallback, {})
 
     picker:find()
 end

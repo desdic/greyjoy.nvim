@@ -533,4 +533,11 @@ if has_telescope then
     end, { nargs = "*", desc = "Run greyjoy via telescope" })
 end
 
+local has_fzf, _ = pcall(require, "fzf-lua")
+if has_fzf then
+    vim.api.nvim_create_user_command("GreyjoyFzf", function(args)
+        require("greyjoy.fzf").run(args.args)
+    end, { nargs = "*", desc = "Run greyjoy via fzf" })
+end
+
 return greyjoy
