@@ -20,6 +20,8 @@ Neovim 0.10+ is required
 
 [Telescope](https://github.com/nvim-telescope/telescope.nvim) + [Plenary](https://github.com/nvim-lua/plenary.nvim) (Optional but UI is more responsive)
 
+[Fzf-lua](https://github.com/ibhagwan/fzf-lua) (Optional)
+
 ## Installing
 
 Using lazy (A more comprehensive example can be found in the [documentation](doc/greyjoy.txt))
@@ -30,7 +32,7 @@ Using lazy (A more comprehensive example can be found in the [documentation](doc
     keys = {
         { "<Leader>gr", "<cmd>Greyjoy<CR>", desc = "[G]reyjoy [r]un" },
         { "<Leader>gt", "<cmd>GreyjoyTelescope<CR>", desc = "[G]reyjoy [t]elescope" },
-        { "<Leader>gg", "<cmd>Greyjoy fast<CR>", desc = "[G]reyjoy fast [g]roup" },
+        { "<Leader>gg", "<cmd>GreyjoyFzf fast<CR>", desc = "[G]reyjoy fast [g]roup" },
         { "<Leader>ge", "<cmd>Greyedit<CR>", desc = "[G]reyjoy [e]edit before run" },
     },
     dependencies = {
@@ -38,7 +40,7 @@ Using lazy (A more comprehensive example can be found in the [documentation](doc
         { "nvim-lua/plenary.nvim" }, -- Optional
         { "nvim-telescope/telescope.nvim" }, -- Optional
     },
-    cmd = { "Greyjoy", "Greyedit", "GreyjoyTelescope" },
+    cmd = { "Greyjoy", "Greyedit", "GreyjoyTelescope", "GreyjoyFzf" },
     config = function()
         local greyjoy = require("greyjoy")
         local condition = require("greyjoy.conditions")
