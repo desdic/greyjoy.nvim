@@ -45,7 +45,8 @@ Using lazy (A more comprehensive example can be found in the [documentation](doc
         local greyjoy = require("greyjoy")
         local condition = require("greyjoy.conditions")
         greyjoy.setup({
-            output_results = "toggleterm",
+            output_results = require("greyjoy.terminals").term,
+            -- output_results = require("greyjoy.terminals").toggleterm,
             last_first = true,
             extensions = {
                 generic = {
@@ -103,6 +104,9 @@ So in the above example its possible to run the generic and makefile plugin by r
       -- greyjoy.nvim it will be dependent on the user configured size for toggle
       -- term.
       size = nil,
+    },
+    term = {
+      height = 5,
     },
     telescope = {
         keys = {

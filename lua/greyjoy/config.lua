@@ -15,6 +15,9 @@ local defaults = {
             -- term.
             size = nil,
         },
+        term = {
+            height = 5,
+        },
         telescope = {
             keys = {
                 select = "<CR>", -- enter
@@ -41,7 +44,7 @@ local defaults = {
     show_command = false, -- show full command when selection
     show_command_in_output = true, -- Show the command that was running in output
     patterns = { ".git", ".svn" }, -- patterns to find the root of the project
-    output_result = "buffer", -- buffer or to toggleterm
+    output_results = require("greyjoy.terminals").buffer, -- Check out functions in terminals.lua or create your own
     default_shell = vim.o.shell, -- default shell to run tasks in
     extensions = {}, -- no extensions are loaded per default
     last_first = false, -- make sure last option is first on next run, not persistant
