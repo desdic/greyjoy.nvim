@@ -72,7 +72,7 @@
 ---          })
 ---
 ---         greyjoy.setup({
----             output_results = "toggleterm",
+---             output_results = require("greyjoy.terminals").toggleterm,
 ---             last_first = true,
 ---             extensions = {
 ---                 generic = {
@@ -188,11 +188,10 @@ local _extensions = require("greyjoy._extensions")
 greyjoy.setup = function(options)
     setmetatable(greyjoy, { __newindex = config.set, __index = config.get })
 
-    if options ~= nil then
-        for k, v in pairs(options) do
-            config.defaults[k] = v
-        end
-    end
+    config.defaults =
+        vim.tbl_deep_extend("force", config.defaults, options or {})
+
+    greyjoy.config = config.defaults
 
     _extensions.set_config(config.defaults["extensions"] or {})
 
@@ -291,10 +290,22 @@ greyjoy.execute = function(command)
         command.pre_hook(command)
     end
 
-    if greyjoy.output_results == "toggleterm" then
-        greyjoy.to_toggleterm(command)
+    local term = require("greyjoy.terminals")
+
+    if type(greyjoy.config.output_results) == "function" then
+        greyjoy.config.output_results(command, greyjoy.config)
+    elseif greyjoy.config.output_results == "toggleterm" then
+        local msg =
+            "Setting `toggleterm` is deprecated and will be replaced with `require('greyjoy.terminals').toggleterm`"
+        vim.notify(msg, vim.log.levels.WARN)
+        print(msg)
+        term.toggleterm(command, greyjoy.config)
     else
-        greyjoy.to_buffer(command)
+        local msg =
+            "Setting `buffer` is deprecated and will be replaced with `require('greyjoy.terminals').buffer`"
+        vim.notify(msg, vim.log.levels.WARN)
+        print(msg)
+        term.buffer(command, greyjoy.config)
     end
 
     vim.api.nvim_exec_autocmds("User", { pattern = "GreyjoyAfterExec" })
@@ -353,100 +364,6 @@ greyjoy.menu = function(rootdir, elements)
             greyjoy.execute(command)
         end
     end)
-end
-
-greyjoy.to_toggleterm = function(command)
-    local ok, toggleterm = pcall(require, "toggleterm")
-    if not ok then
-        vim.notify("Unable to require toggleterm, please run healthcheck.")
-
-        return
-    end
-
-    local count = 1 -- keep old behaviour and have all run in same terminal window
-    local group_type = type(config.defaults["toggleterm"]["default_group_id"])
-    if group_type == "number" then
-        count = config.defaults["toggleterm"]["default_group_id"]
-    elseif group_type == "function" then
-        count =
-            config.defaults["toggleterm"]["default_group_id"](command.plugin)
-    end
-
-    if command.group_id ~= nil then
-        group_type = type(command.group_id)
-        if group_type == "number" then
-            count = command.group_id
-        elseif group_type == "function" then
-            count = command.group_id(command.plugin)
-        end
-    end
-
-    -- TermExec cmd=
-
-    local commandstr = table.concat(command.command, " ")
-    local exec_command = "dir='"
-        .. command.path
-        .. "' cmd='"
-        .. commandstr
-        .. "'"
-        .. " name='"
-        .. commandstr
-        .. "'"
-    if greyjoy.ui.toggleterm.size then
-        exec_command = "size="
-            .. greyjoy.ui.toggleterm.size
-            .. " "
-            .. exec_command
-    end
-
-    toggleterm.exec_command(exec_command, count)
-end
-
-greyjoy.to_buffer = function(command)
-    local bufnr = vim.api.nvim_create_buf(false, true)
-    vim.api.nvim_set_option_value("filetype", "greyjoy", { buf = bufnr })
-
-    local append_data = function(_, data)
-        if data then
-            vim.api.nvim_set_option_value("modifiable", true, { buf = bufnr })
-            vim.api.nvim_buf_set_lines(bufnr, -1, -1, false, data)
-            vim.api.nvim_set_option_value("modifiable", false, { buf = bufnr })
-        end
-    end
-
-    if greyjoy.show_command_in_output then
-        vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {
-            "output of " .. table.concat(command.command, " ") .. ":",
-        })
-    end
-
-    local width = greyjoy.ui.buffer.width
-    local height = greyjoy.ui.buffer.height
-
-    local ui = vim.api.nvim_list_uis()[1]
-    local opts = {
-        relative = "editor",
-        width = width,
-        height = height,
-        col = (ui.width - width) / 2,
-        row = (ui.height - height) / 2,
-        style = greyjoy.style,
-        border = greyjoy.border,
-        focusable = true,
-    }
-
-    vim.api.nvim_set_option_value("modifiable", false, { buf = bufnr })
-    vim.api.nvim_open_win(bufnr, true, opts)
-
-    local commandstr = table.concat(command.command, " ")
-    local shell_command = { greyjoy.default_shell, "-c", commandstr }
-
-    vim.fn.jobstart(shell_command, {
-        stdout_buffered = true,
-        on_stdout = append_data,
-        on_stderr = append_data,
-        cwd = command.path,
-    })
 end
 
 local add_elements = function(elements, output)
