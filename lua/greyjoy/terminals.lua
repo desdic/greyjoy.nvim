@@ -1,24 +1,45 @@
 local M = {}
 
 M.term = function(command, config)
-    local height = config.ui.term.height
+    local total_lines = vim.o.lines
+    local total_cols = vim.o.columns
+    local widthpct = config.ui.term.width_pct or 0.2 -- default to 20% of screen width
 
-    local curwin = vim.api.nvim_get_current_win()
-    local curbuf = vim.api.nvim_win_get_buf(curwin)
+    local width = math.floor(total_cols * widthpct)
+
+    local current_win = vim.api.nvim_get_current_win()
+    local win_width = vim.api.nvim_win_get_width(current_win)
 
     if vim.g["greyjoytermid"] == nil then
-        vim.cmd.vnew()
-        vim.cmd.term()
+        vim.api.nvim_win_set_width(current_win, win_width - width)
 
-        vim.fn.jobpid(vim.o.channel)
+        local buf = vim.api.nvim_create_buf(false, true)
+
+        local win = vim.api.nvim_open_win(buf, true, {
+            relative = "editor",
+            width = width,
+            height = total_lines,
+            row = 0,
+            col = total_cols - width,
+            style = "minimal",
+            border = "none",
+        })
+
+        -- Move it to the bottom
         vim.cmd.wincmd("J")
+        vim.cmd.term()
+        vim.fn.jobpid(vim.o.channel)
 
-        local termwin = vim.api.nvim_get_current_win()
-        vim.api.nvim_win_set_height(0, height)
+        -- if someone defined the hight we use it
+        if config.ui.term.height then
+            vim.api.nvim_win_set_height(0, config.ui.term.height)
+        end
 
-        vim.g["greyjoytermid"] = termwin
+        vim.g["greyjoytermid"] = win
         vim.g["greyjoychanid"] = vim.bo.channel
-        vim.g["greyjoybufid"] = vim.api.nvim_get_current_buf()
+        vim.g["greyjoybufid"] = buf
+        vim.bo[buf].buflisted = false
+        vim.bo[buf].bufhidden = "hide"
 
         vim.api.nvim_create_autocmd({ "WinClosed", "TermClose" }, {
             callback = function(ev)
@@ -44,9 +65,7 @@ M.term = function(command, config)
 
     vim.fn.chansend(vim.g["greyjoychanid"], { commandstr })
 
-    -- restore window/buf
-    vim.api.nvim_set_current_win(curwin)
-    vim.fn.bufload(curbuf)
+    vim.api.nvim_set_current_win(current_win)
 end
 
 M.toggleterm = function(command, config)

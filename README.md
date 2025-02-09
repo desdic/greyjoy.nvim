@@ -106,7 +106,7 @@ So in the above example its possible to run the generic and makefile plugin by r
       size = nil,
     },
     term = {
-      height = 5,
+      width_pct = 0.2, -- 20% of screen
     },
     telescope = {
         keys = {
