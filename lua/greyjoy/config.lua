@@ -16,7 +16,7 @@ local defaults = {
             size = nil,
         },
         term = {
-            height = 5,
+            width_pct = 0.2,
         },
         telescope = {
             keys = {
