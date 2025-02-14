@@ -15,12 +15,21 @@ greycall.translate = function(obj)
     return obj
 end
 
-greycall.extensions = function(arg, callback, callbackoptions)
-    local bufname = vim.api.nvim_buf_get_name(0)
-    local filetype = vim.bo.filetype
+greycall.extensions = function(
+    arg,
+    callback,
+    callbackoptions,
+    curbufname,
+    curfiletype
+)
+    local bufname = curbufname or vim.api.nvim_buf_get_name(0)
+    local filetype = curfiletype or vim.bo.filetype
+
+    -- local filetype = vim.bo.filetype
     local pluginname = arg or ""
     local fileobj = utils.new_file_obj(greyjoy.patterns, bufname, filetype)
     local rootdir = fileobj.rootdir
+
     for plugin, obj in pairs(greyjoy.extensions) do
         local plugin_obj = obj
         local plugin_type = plugin_obj.type
