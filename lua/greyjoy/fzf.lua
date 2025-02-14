@@ -27,6 +27,10 @@ greyfzf.run = function(arg)
     local content = {}
     local count = 0
 
+    -- bufname and filetype must be before fzf otherwise data shows the fzf buffer
+    local bufname = vim.api.nvim_buf_get_name(0)
+    local filetype = vim.bo.filetype
+
     fzf.fzf_exec(function(fzf_cb)
         coroutine.wrap(function()
             local co = coroutine.running()
@@ -36,7 +40,7 @@ greyfzf.run = function(arg)
                 fzf_cb = fzf_cb,
                 content = content,
                 count = count,
-            })
+            }, bufname, filetype)
 
             fzf_cb()
         end)()
