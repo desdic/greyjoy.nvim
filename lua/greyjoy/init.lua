@@ -73,7 +73,6 @@
 ---
 ---         greyjoy.setup({
 ---             output_results = require("greyjoy.terminals").toggleterm,
----             last_first = true,
 ---             extensions = {
 ---                 generic = {
 ---                     commands = {
@@ -176,7 +175,6 @@ local _extensions = require("greyjoy._extensions")
 ---@field show_command_in_output boolean? Show command in output (default: true)
 ---@field patterns table? List of folders that indicate the root directory of a project (default: {".git", ".svn"})
 ---@field output_results string?: Where to render the output. buffer or toggleterm (default: buffer)
----@field last_first boolean?: Make the last chosen value the default one on next run (default: false)
 ---@field extensions table?: Configuration for all plugins (default: nil)
 ---@field run_groups table?: Groups of plugins to run (default: nil)
 ---@field overrides table?: Table used for renaming/translating commands to new commands (default: nil)
@@ -194,8 +192,6 @@ greyjoy.setup = function(options)
     greyjoy.config = config.defaults
 
     _extensions.set_config(config.defaults["extensions"] or {})
-
-    greyjoy.last_element = {}
 
     -- easy index to do lookup later
     greyjoy.run_group_map = {}
@@ -236,9 +232,8 @@ end
 
 greyjoy.extensions = require("greyjoy._extensions").manager
 
-local function generate_list(rootdir, elements, overrides)
+local function generate_list(elements, overrides)
     local menuelem = {}
-    local menulookup = {}
     local commands = {}
 
     for _, value in ipairs(elements) do
@@ -254,7 +249,6 @@ local function generate_list(rootdir, elements, overrides)
         end
 
         -- keep track of what elements we have
-        menulookup[name] = true
         table.insert(menuelem, name)
         commands[name] = {
             command = command,
@@ -266,24 +260,13 @@ local function generate_list(rootdir, elements, overrides)
     end
 
     table.sort(menuelem)
-    if utils.if_nil(greyjoy.last_first, false) then
-        if utils.if_nil(greyjoy.last_element[rootdir], "") ~= "" then
-            for index, value in ipairs(menuelem) do
-                if value == greyjoy.last_element[rootdir] then
-                    table.remove(menuelem, index)
-                end
-            end
-            -- only add it if its supposed to be on the list
-            if menulookup[greyjoy.last_element[rootdir]] then
-                table.insert(menuelem, 1, greyjoy.last_element[rootdir])
-            end
-        end
-    end
 
     return menuelem, commands
 end
 
 greyjoy.execute = function(command)
+    greyjoy.last_command = command
+
     vim.api.nvim_exec_autocmds("User", { pattern = "GreyjoyBeforeExec" })
 
     if command.pre_hook then
@@ -315,16 +298,20 @@ greyjoy.execute = function(command)
     end
 end
 
+greyjoy.run_last = function()
+    if greyjoy.last_command then
+        greyjoy.execute(greyjoy.last_command)
+    end
+end
+
 greyjoy.edit = function(rootdir, elements)
     if next(elements) == nil then
         return
     end
 
-    local menuelem, commands =
-        generate_list(rootdir, elements, greyjoy.overrides)
+    local menuelem, commands = generate_list(elements, greyjoy.overrides)
     vim.ui.select(menuelem, { prompt = "Edit before run" }, function(label)
         if label then
-            greyjoy.last_element[rootdir] = label
             local command = commands[label]
 
             local commandinput = table.concat(command.command, " ")
@@ -354,11 +341,9 @@ greyjoy.menu = function(rootdir, elements)
         return
     end
 
-    local menuelem, commands =
-        generate_list(rootdir, elements, greyjoy.overrides)
+    local menuelem, commands = generate_list(elements, greyjoy.overrides)
     vim.ui.select(menuelem, { prompt = "Select a command" }, function(label)
         if label then
-            greyjoy.last_element[rootdir] = label
             local command = commands[label]
 
             greyjoy.execute(command)
@@ -443,7 +428,12 @@ vim.api.nvim_create_user_command("Greyedit", function(args)
     greyjoy.run(args.args, "edit")
 end, { nargs = "*", desc = "Edit greyjoy" })
 
+vim.api.nvim_create_user_command("GreyjoyRunLast", function()
+    greyjoy.run_last()
+end, { nargs = "*", desc = "Run last greyjoy command" })
+
 local has_telescope, _ = pcall(require, "telescope")
+
 if has_telescope then
     vim.api.nvim_create_user_command("GreyjoyTelescope", function(args)
         require("greyjoy.telescope").run(args.args)

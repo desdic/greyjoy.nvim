@@ -12,7 +12,6 @@ local callback = require("greyjoy.callback")
 
 local all_results = {}
 local opts = {}
-local last_choice = ""
 
 local generate_new_finder = function()
     return finders.new_table({
@@ -31,15 +30,6 @@ local generate_new_finder = function()
             }
         end,
     })
-end
-
-local get_selection_index = function(choice)
-    for index, data in pairs(all_results) do
-        if data.name == choice then
-            return index
-        end
-    end
-    return #all_results
 end
 
 local translate = function(obj)
@@ -61,21 +51,12 @@ greytelescope.run = function(arg)
         prompt_title = "Runners",
         finder = generate_new_finder(),
         sorter = sorters.get_generic_fuzzy_sorter(),
-        on_complete = {
-            function(self)
-                if last_choice ~= "" then
-                    local index = get_selection_index(last_choice)
-                    self:set_selection(self:get_row(index))
-                end
-            end,
-        },
         attach_mappings = function(_, map)
             map(
                 "i",
                 greyjoy.ui.telescope.keys.select,
                 function(cur_prompt_bufnr)
                     local selection = action_state.get_selected_entry()
-                    last_choice = selection.name
 
                     actions.close(cur_prompt_bufnr)
 
@@ -104,7 +85,6 @@ greytelescope.run = function(arg)
                         end
 
                         obj.command = utils.str_to_array(newname)
-                        last_choice = newname
 
                         actions.close(cur_prompt_bufnr)
                         greyjoy.execute(obj)

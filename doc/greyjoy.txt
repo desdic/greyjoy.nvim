@@ -77,7 +77,6 @@ Feature rich example using the Lazy plugin manager
 
         greyjoy.setup({
             output_results = require("greyjoy.terminals").toggleterm,
-            last_first = true,
             extensions = {
                 generic = {
                     commands = {
@@ -187,7 +186,6 @@ Fields ~
 {show_command_in_output} `(boolean?)` Show command in output (default: true)
 {patterns} `(table?)` List of folders that indicate the root directory of a project (default: {".git", ".svn"})
 {output_results} `(string?:)` Where to render the output. buffer or toggleterm (default: buffer)
-{last_first} `(boolean?:)` Make the last chosen value the default one on next run (default: false)
 {extensions} `(table?:)` Configuration for all plugins (default: nil)
 {run_groups} `(table?:)` Groups of plugins to run (default: nil)
 {overrides} `(table?:)` Table used for renaming/translating commands to new commands (default: nil)
@@ -293,7 +291,6 @@ Default options:
       output_results = require("greyjoy.terminals").buffer, -- Check out functions in terminals.lua or create your own
       default_shell = vim.o.shell, -- default shell to run tasks in
       extensions = {}, -- no extensions are loaded per default
-      last_first = false, -- make sure last option is first on next run, not persistant
       overrides = {}, -- make global overrides
   }
 <
