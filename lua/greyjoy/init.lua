@@ -288,7 +288,7 @@ greyjoy.run_last = function()
     end
 end
 
-greyjoy.edit = function(rootdir, elements)
+greyjoy.edit = function(elements)
     if next(elements) == nil then
         return
     end
@@ -320,7 +320,7 @@ greyjoy.edit = function(rootdir, elements)
     end)
 end
 
-greyjoy.menu = function(rootdir, elements)
+greyjoy.menu = function(elements)
     if next(elements) == nil then
         return
     end
@@ -398,9 +398,9 @@ greyjoy.run = function(arg, method)
     end
 
     if method == "edit" then
-        greyjoy.edit(rootdir, elements)
+        greyjoy.edit(elements)
     else
-        greyjoy.menu(rootdir, elements)
+        greyjoy.menu(elements)
     end
 end
 
@@ -417,7 +417,6 @@ vim.api.nvim_create_user_command("GreyjoyRunLast", function()
 end, { nargs = "*", desc = "Run last greyjoy command" })
 
 local has_telescope, _ = pcall(require, "telescope")
-
 if has_telescope then
     vim.api.nvim_create_user_command("GreyjoyTelescope", function(args)
         require("greyjoy.telescope").run(args.args)
