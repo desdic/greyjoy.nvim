@@ -77,7 +77,6 @@ Feature rich example using the Lazy plugin manager
 
         greyjoy.setup({
             output_results = require("greyjoy.terminals").toggleterm,
-            last_first = true,
             extensions = {
                 generic = {
                     commands = {
@@ -159,12 +158,12 @@ Class ~
 
 Class ~
 {TelescopeOpts}
-{keys} TelescopeOptsKeys
+{keys} `(TelescopeOptsKeys)`
 
 Class ~
 {UI}
-{buffer} UIBufferOpts?
-{toggleterm} TogggleTermUIOpts?
+{buffer} `(UIBufferOpts?)`
+{toggleterm} `(TogggleTermUIOpts?)`
 
 ------------------------------------------------------------------------------
 Class ~
@@ -178,22 +177,21 @@ Fields ~
 Class ~
 {Settings}
 Fields ~
-{ui} UI?
-{toggleterm} ToggleTermOpts
+{ui} `(UI?)`
+{toggleterm} `(ToggleTermOpts)`
 {enable} `(boolean?)` Enable/Disable running tasks (default: true)
 {border} `(string?)` Style for vim.ui.selector (default: "rounded")
 {style} `(string?)` Style for window (default: "minimal")
 {show_command} `(boolean?)` Show command to run in menu (default: false)
 {show_command_in_output} `(boolean?)` Show command in output (default: true)
 {patterns} `(table?)` List of folders that indicate the root directory of a project (default: {".git", ".svn"})
-{output_results} `(string?:)` Where to render the output. buffer or toggleterm (default: buffer)
-{last_first} `(boolean?:)` Make the last chosen value the default one on next run (default: false)
-{extensions} `(table?:)` Configuration for all plugins (default: nil)
-{run_groups} `(table?:)` Groups of plugins to run (default: nil)
-{overrides} `(table?:)` Table used for renaming/translating commands to new commands (default: nil)
+{output_results} `(string?)`: Where to render the output. buffer or toggleterm (default: buffer)
+{extensions} `(table?)`: Configuration for all plugins (default: nil)
+{run_groups} `(table?)`: Groups of plugins to run (default: nil)
+{overrides} `(table?)`: Table used for renaming/translating commands to new commands (default: nil)
 
 Parameters ~
-{options} Settings: Configuration options
+{options} `(Settings)`: Configuration options
 
 Usage ~
 `require("greyjoy").setup({})`
@@ -202,7 +200,7 @@ Usage ~
                                                       *greyjoy.load_extension()*
                         `greyjoy.load_extension`({name})
 Parameters ~
-{name} `(string:)` Name of extension to load
+{name} `(string)`: Name of extension to load
 
 Usage ~
 `require("greyjoy").load_extension("generic")`
@@ -293,7 +291,6 @@ Default options:
       output_results = require("greyjoy.terminals").buffer, -- Check out functions in terminals.lua or create your own
       default_shell = vim.o.shell, -- default shell to run tasks in
       extensions = {}, -- no extensions are loaded per default
-      last_first = false, -- make sure last option is first on next run, not persistant
       overrides = {}, -- make global overrides
   }
 <
@@ -330,13 +327,13 @@ cargo = {
 Class ~
 {CargoOpts}
 Fields ~
-{group_id} `(number?:)` Toggleterm terminal group id. (default: nil)
-{targets} `(table?:)` Table with commands for cargo
-{pre_hook} `(function?:)` Function to run before running command. (default: nil)
-{post_hook} `(function?:)` Function to run after running command. (default: nil)
+{group_id} `(number?)`: Toggleterm terminal group id. (default: nil)
+{targets} `(table?)`: Table with commands for cargo
+{pre_hook} `(function?)`: Function to run before running command. (default: nil)
+{post_hook} `(function?)`: Function to run after running command. (default: nil)
 
 Parameters ~
-{config} CargoOpts?: Configuration options
+{config} `(CargoOpts?)`: Configuration options
 
 
 ==============================================================================
@@ -364,14 +361,14 @@ docker_compose = {
 Class ~
 {DocerComposeOpts}
 Fields ~
-{group_id} `(number?:)` Toggleterm terminal group id. (default: nil)
-{cmd} `(string?:)` Path to docker-compose command. (default: /usr/bin/docker-compose)
-{shell} `(string?:)` Shell to use for login in container. (default: /bin/bash)
-{pre_hook} `(function?:)` Function to run before running command. (default: nil)
-{post_hook} `(function?:)` Function to run after running command. (default: nil)
+{group_id} `(number?)`: Toggleterm terminal group id. (default: nil)
+{cmd} `(string?)`: Path to docker-compose command. (default: /usr/bin/docker-compose)
+{shell} `(string?)`: Shell to use for login in container. (default: /bin/bash)
+{pre_hook} `(function?)`: Function to run before running command. (default: nil)
+{post_hook} `(function?)`: Function to run after running command. (default: nil)
 
 Parameters ~
-{config} DocerComposeOpts?: Configuration options
+{config} `(DocerComposeOpts?)`: Configuration options
 
 
 ==============================================================================
@@ -394,10 +391,10 @@ generic = {
 Class ~
 {CommandOpts}
 Fields ~
-{command} `(table:)` Command with parameters to run (example: command = { "go", "run", "main.go" })
-{filetype} `(string?:)` Trigger on a specific filetype. (example: filetype = "go")
-{filename} `(string?:)` Trigger on a specific filename. (example: filetype = "main.go")
-{condition} `(function?:)` Trigger via a function.
+{command} `(table)`: Command with parameters to run (example: command = { "go", "run", "main.go" })
+{filetype} `(string?)`: Trigger on a specific filetype. (example: filetype = "go")
+{filename} `(string?)`: Trigger on a specific filename. (example: filetype = "main.go")
+{condition} `(function?)`: Trigger via a function.
 
 The command table supports a few variables/substituions where name is replaced.
 
@@ -431,13 +428,13 @@ Examples:
 Class ~
 {GenericOpts}
 Fields ~
-{group_id} `(number?:)` Toggleterm terminal group id. (default: nil)
-{commands} CommandOpts?: Configuration of commands and when to run. (default: `(nil))`
-{pre_hook} `(function?:)` Function to run before running command. (default: nil)
-{post_hook} `(function?:)` Function to run after running command. (default: nil)
+{group_id} `(number?)`: Toggleterm terminal group id. (default: nil)
+{commands} `(CommandOpts?)`: Configuration of commands and when to run. (default: nil)
+{pre_hook} `(function?)`: Function to run before running command. (default: nil)
+{post_hook} `(function?)`: Function to run after running command. (default: nil)
 
 Parameters ~
-{config} GenericOpts?: Configuration options
+{config} `(GenericOpts?)`: Configuration options
 
 
 ==============================================================================
@@ -466,14 +463,14 @@ kitchen = {
 Class ~
 {KitchenOpts}
 Fields ~
-{group_id} `(number?:)` Toggleterm terminal group id. (default: nil)
-{targets} `(table?:)` Table with commands for test kitchen
-{include_all} `(boolean?:)` Add the `all` target in test kitchen (default: false)
-{pre_hook} `(function?:)` Function to run before running command. (default: nil)
-{post_hook} `(function?:)` Function to run after running command. (default: nil)
+{group_id} `(number?)`: Toggleterm terminal group id. (default: nil)
+{targets} `(table?)`: Table with commands for test kitchen
+{include_all} `(boolean?)`: Add the `all` target in test kitchen (default: false)
+{pre_hook} `(function?)`: Function to run before running command. (default: nil)
+{post_hook} `(function?)`: Function to run after running command. (default: nil)
 
 Parameters ~
-{config} KitchenOpts?: Configuration options
+{config} `(KitchenOpts?)`: Configuration options
 
 
 ==============================================================================
@@ -498,12 +495,12 @@ makefile = {
 Class ~
 {MakefileOpts}
 Fields ~
-{group_id} `(number?:)` Toggleterm terminal group id. (default: nil)
-{pre_hook} `(function?:)` Function to run before running command
-{post_hook} `(function?:)` Function to run after running command
+{group_id} `(number?)`: Toggleterm terminal group id. (default: nil)
+{pre_hook} `(function?)`: Function to run before running command
+{post_hook} `(function?)`: Function to run after running command
 
 Parameters ~
-{config} MakefileOpts?: Configuration options
+{config} `(MakefileOpts?)`: Configuration options
 
 
 ==============================================================================
@@ -530,12 +527,12 @@ vscode_tasks = {
 Class ~
 {VSCodeTasksOpts}
 Fields ~
-{group_id} `(number?:)` Toggleterm terminal group id. (default: nil)
-{pre_hook} `(function?:)` Function to run before running command. (default: nil)
-{post_hook} `(function?:)` Function to run after running command. (default: nil)
+{group_id} `(number?)`: Toggleterm terminal group id. (default: nil)
+{pre_hook} `(function?)`: Function to run before running command. (default: nil)
+{post_hook} `(function?)`: Function to run after running command. (default: nil)
 
 Parameters ~
-{config} VSCodeTasksOpts?: Configuration options
+{config} `(VSCodeTasksOpts?)`: Configuration options
 
 
  vim:tw=78:ts=8:noet:ft=help:norl:

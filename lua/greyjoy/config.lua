@@ -47,7 +47,6 @@ local defaults = {
     output_results = require("greyjoy.terminals").buffer, -- Check out functions in terminals.lua or create your own
     default_shell = vim.o.shell, -- default shell to run tasks in
     extensions = {}, -- no extensions are loaded per default
-    last_first = false, -- make sure last option is first on next run, not persistant
     overrides = {}, -- make global overrides
 }
 --minidoc_afterlines_end

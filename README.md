@@ -34,20 +34,20 @@ Using lazy (A more comprehensive example can be found in the [documentation](doc
         { "<Leader>gt", "<cmd>GreyjoyTelescope<CR>", desc = "[G]reyjoy [t]elescope" },
         { "<Leader>gg", "<cmd>GreyjoyFzf fast<CR>", desc = "[G]reyjoy fast [g]roup" },
         { "<Leader>ge", "<cmd>Greyedit<CR>", desc = "[G]reyjoy [e]edit before run" },
+        { "<Leader>rl", "<cmd>GreyjoyRunLast<CR>", desc = "[G]reyjoy [r]un last" },
     },
     dependencies = {
         { "akinsho/toggleterm.nvim" }, -- Optional
         { "nvim-lua/plenary.nvim" }, -- Optional
         { "nvim-telescope/telescope.nvim" }, -- Optional
     },
-    cmd = { "Greyjoy", "Greyedit", "GreyjoyTelescope", "GreyjoyFzf" },
+    cmd = { "Greyjoy", "Greyedit", "GreyjoyTelescope", "GreyjoyFzf", "GreyjoyRunLast" },
     config = function()
         local greyjoy = require("greyjoy")
         local condition = require("greyjoy.conditions")
         greyjoy.setup({
             output_results = require("greyjoy.terminals").term,
             -- output_results = require("greyjoy.terminals").toggleterm,
-            last_first = true,
             extensions = {
                 generic = {
                     commands = {
@@ -130,7 +130,6 @@ So in the above example its possible to run the generic and makefile plugin by r
   patterns = {".git", ".svn"}, -- patterns to find the root of the project
   output_result = "buffer", -- buffer or to toggleterm
   extensions = {}, -- no extensions are loaded per default
-  last_first = false, -- make sure last option is first on next run, not persistant
   run_groups = {}, -- no groups configured per default
   overrides = {}, -- make global overrides
 }
