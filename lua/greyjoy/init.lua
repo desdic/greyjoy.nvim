@@ -273,23 +273,7 @@ greyjoy.execute = function(command)
         command.pre_hook(command)
     end
 
-    local term = require("greyjoy.terminals")
-
-    if type(greyjoy.config.output_results) == "function" then
-        greyjoy.config.output_results(command, greyjoy.config)
-    elseif greyjoy.config.output_results == "toggleterm" then
-        local msg =
-            "Setting `toggleterm` is deprecated and will be replaced with `require('greyjoy.terminals').toggleterm`"
-        vim.notify(msg, vim.log.levels.WARN)
-        print(msg)
-        term.toggleterm(command, greyjoy.config)
-    else
-        local msg =
-            "Setting `buffer` is deprecated and will be replaced with `require('greyjoy.terminals').buffer`"
-        vim.notify(msg, vim.log.levels.WARN)
-        print(msg)
-        term.buffer(command, greyjoy.config)
-    end
+    greyjoy.config.output_results(command, greyjoy.config)
 
     vim.api.nvim_exec_autocmds("User", { pattern = "GreyjoyAfterExec" })
 
