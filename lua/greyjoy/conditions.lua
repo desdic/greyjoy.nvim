@@ -17,6 +17,7 @@ Conditions.file_exists = function(filename, obj)
     if greyutil.file_exists(fpath) then
         return true
     end
+    return false
 end
 
 ---@param dirname string Dirname to look for
@@ -30,6 +31,7 @@ Conditions.directory_exists = function(dirname, obj)
     if greyutil.directory_exists(fpath) then
         return true
     end
+    return false
 end
 
 return Conditions
