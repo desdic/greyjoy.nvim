@@ -79,4 +79,24 @@ M.new_file_obj = function(patterns, bufname, filetype)
     }
 end
 
+M.substitute_variables = function(value, fileobj)
+    local command = {}
+    if type(value) == "table" then
+        for index in ipairs(value) do
+            local celem = value[index]
+            celem = celem:gsub("{filename}", fileobj.filename)
+            celem = celem:gsub("{filepath}", fileobj.filepath)
+            celem = celem:gsub("{rootdir}", fileobj.rootdir)
+
+            table.insert(command, celem)
+        end
+    elseif type(value) == "string" then
+        value = value:gsub("{filename}", fileobj.filename)
+        value = value:gsub("{filepath}", fileobj.filepath)
+        value = value:gsub("{rootdir}", fileobj.rootdir)
+        command = { value }
+    end
+    return command
+end
+
 return M

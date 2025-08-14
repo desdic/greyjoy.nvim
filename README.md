@@ -16,11 +16,15 @@ Integration with [toggleterm](https://github.com/akinsho/toggleterm.nvim) is als
 
 Neovim 0.10+ is required
 
-[Toggleterm](https://github.com/akinsho/toggleterm.nvim) (Optional)
+## Optional
 
-[Telescope](https://github.com/nvim-telescope/telescope.nvim) + [Plenary](https://github.com/nvim-lua/plenary.nvim) (Optional but UI is more responsive)
+Greyjoy integrates with a few other plugins like but its all optional
 
-[Fzf-lua](https://github.com/ibhagwan/fzf-lua) (Optional)
+[Toggleterm](https://github.com/akinsho/toggleterm.nvim)
+
+[Telescope](https://github.com/nvim-telescope/telescope.nvim) + [Plenary](https://github.com/nvim-lua/plenary.nvim)
+
+[Fzf-lua](https://github.com/ibhagwan/fzf-lua)
 
 ## Installing
 
@@ -77,6 +81,7 @@ Using lazy (A more comprehensive example can be found in the [documentation](doc
             run_groups = { fast = { "generic", "makefile", "cargo", "docker_compose" } },
         })
 
+        greyjoy.load_extension("file") -- optional
         greyjoy.load_extension("cargo") -- optional
         greyjoy.load_extension("docker_compose") -- optional
         greyjoy.load_extension("generic") -- optional
@@ -155,7 +160,7 @@ Default `greyjoy` does not have any extensions enabled.
 
 `generic` extension is a global module that does not take into account if we are in a project (found via the patterns). Commands to run can be matched using `filetype`, `filename`, `filepath`
 
-example:
+Example:
 ```
 generic = {
   commands = {
@@ -196,6 +201,37 @@ The generic module can substitute current variables
 | {rootdir} | path of root (containing patterns like .git) |
 
 The above example is only triggered if a file is of type `python` and the filename matches `test.py`
+
+
+
+### File
+
+`file` extension is a global module that only reads a config (default greyjoy.json) from within your project
+
+Example configuration:
+```
+file = {
+  filename = "myrunner.json"
+},
+```
+
+The file module can substitute current variables
+
+| variable | expands to |
+| :--- | :--- |
+| {filename} | current filename |
+| {filepath} | path of current file |
+| {rootdir} | path of root (containing patterns like .git) |
+
+The configuration file is a simple key value
+
+```json
+{
+  "build all": ["make build"],
+  "do cleanup": "make clean"
+}
+
+```
 
 ### Makefile
 
