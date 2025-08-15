@@ -129,6 +129,7 @@
 ---         })
 ---
 ---         greyjoy.load_extension("generic")
+---         greyjoy.load_extension("file")
 ---         greyjoy.load_extension("makefile")
 ---         greyjoy.load_extension("kitchen")
 ---         greyjoy.load_extension("cargo")
