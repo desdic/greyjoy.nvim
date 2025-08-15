@@ -1,104 +1,80 @@
-# greyjoy.nvim
+# 🚀 `greyjoy.nvim`
 
 ![Test](https://github.com/desdic/greyjoy.nvim/actions/workflows/ci.yml/badge.svg)
 
-## What is greyjoy
+`greyjoy.nvim` is a highly extensible and pluggable pattern/file based launcher/runner.
 
-`greyjoy.nvim` is a pluggable pattern/file based launcher/runner.
+## ⚡️ Requirements
 
-[![Greyjoy.nvim demo](http://img.youtube.com/vi/9AcNjkqROIM/0.jpg)](http://www.youtube.com/watch?v=9AcNjkqROIM "Greyjoy.nvim demo")
+**Neovim** >=0.11
 
-Greyjoy per default uses vim.ui.select so the settings from (telescope, dressing etc.) menu will reflect it. But there is also support for telescope (requires [telescope](https://github.com/nvim-telescope/telescope.nvim)) and a fzf (requires [fzf-lua](https://github.com/ibhagwan/fzf-lua))
+## 📦 Installation
 
-Integration with [toggleterm](https://github.com/akinsho/toggleterm.nvim) is also provided.
+Install the plugin with your package manager:
 
-## Requirements
+### [lazy.nvim](https://github.com/folke/lazy.nvim)
 
-Neovim 0.10+ is required
+> [!important]
+> Greyjoy is pluggable and has no default extensions so in order run anything you need at least one extension enabled
+> Check the [extensions](#extensions) section.
 
-## Optional
+> [!tip]
+> It's a good idea to run `:checkhealth greyjoy` to see if everything is set up correctly.
 
-Greyjoy integrates with a few other plugins like but its all optional
+Basic example using the [generic](#generic) plugin to get started
 
-[Toggleterm](https://github.com/akinsho/toggleterm.nvim)
-
-[Telescope](https://github.com/nvim-telescope/telescope.nvim) + [Plenary](https://github.com/nvim-lua/plenary.nvim)
-
-[Fzf-lua](https://github.com/ibhagwan/fzf-lua)
-
-## Installing
-
-Using lazy (A more comprehensive example can be found in the [documentation](doc/greyjoy.txt))
-
-```
+```lua
 {
     "desdic/greyjoy.nvim",
-    keys = {
-        { "<Leader>gr", "<cmd>Greyjoy<CR>", desc = "[G]reyjoy [r]un" },
-        { "<Leader>gt", "<cmd>GreyjoyTelescope<CR>", desc = "[G]reyjoy [t]elescope" },
-        { "<Leader>gg", "<cmd>GreyjoyFzf fast<CR>", desc = "[G]reyjoy fast [g]roup" },
-        { "<Leader>ge", "<cmd>Greyedit<CR>", desc = "[G]reyjoy [e]edit before run" },
-        { "<Leader>rl", "<cmd>GreyjoyRunLast<CR>", desc = "[G]reyjoy [r]un last" },
-    },
-    dependencies = {
-        { "akinsho/toggleterm.nvim" }, -- Optional
-        { "nvim-lua/plenary.nvim" }, -- Optional
-        { "nvim-telescope/telescope.nvim" }, -- Optional
-    },
-    cmd = { "Greyjoy", "Greyedit", "GreyjoyTelescope", "GreyjoyFzf", "GreyjoyRunLast" },
     config = function()
-        local greyjoy = require("greyjoy")
-        local condition = require("greyjoy.conditions")
         greyjoy.setup({
-            output_results = require("greyjoy.terminals").term,
-            -- output_results = require("greyjoy.terminals").toggleterm,
             extensions = {
                 generic = {
                     commands = {
-                        ["run {filename}"] = { command = { "python3", "{filename}" }, filetype = "python" },
-                        ["build main.go"] = {
-                            command = { "go", "build", "main.go" },
-                            filetype = "go",
-                            filename = "main.go",
-                        },
-                        ["zig build"] = {
-                            command = { "zig", "build" },
-                            filetype = "zig",
-                        },
-                        ["cmake -S . -B target"] = {
-                            command = { "cmake", "-S", ".", "-B", "target" },
-                            condition = function(n)
-                                return condition.file_exists("CMakeLists.txt", n)
-                                    and not condition.directory_exists("target", n)
-                            end,
-                        },
+                        ["run {filename}"] = { command = { "python3 {filename}" }, filetype = "python" },
                     },
                 },
-                kitchen = { group_id = 2, targets = { "converge", "verify", "destroy", "test" }, include_all = false },
-                docker_compose = { group_id = 3 },
-                cargo = { group_id = 4 },
             },
-            run_groups = { fast = { "generic", "makefile", "cargo", "docker_compose" } },
         })
 
-        greyjoy.load_extension("file") -- optional
-        greyjoy.load_extension("cargo") -- optional
-        greyjoy.load_extension("docker_compose") -- optional
-        greyjoy.load_extension("generic") -- optional
-        greyjoy.load_extension("kitchen") -- optional
-        greyjoy.load_extension("makefile") -- optional
-        greyjoy.load_extension("vscode_tasks") -- optional
-    end,
+        greyjoy.load_extension("generic")
+    end
 }
 ```
 
-Once installed and reloaded you can use `:Greyjoy` or `:GreyjoyTelescope` to run it or `Greyjoy/GreyjoyTelescope <pluginname or group name>`. If you need to edit a command (like adding a variable or option) you can use `:Greyedit` (Works with group and plugins as parameter too).
+Once installed and reloaded you can use
 
-So in the above example its possible to run the generic and makefile plugin by running `:Greyjoy fast` or if you only wanted to run the makefile plugin you could do `:Greyjoy makefile`
+| Command | Description | Requires |
+| --- | :--- | :--- |
+| `:Greyjoy` <optional extension name or group name>  | Show run list | None |
+| `:Greyjoyedit` <optinal extension name or group name> | Edit command from run list (only persist during session) | None |
+| `:GreyjoyRunLast` | Run last command  | None |
+| `:GreyjoyTelescope` <optional extension name or group name>  | Show/Edit run list | Telescope |
+| `:GreyjoyFzf` <optional extension name or group name>  | Show/Edit run list | Fzf-lua |
 
-## Default settings
+<details><summary>Optional dependencies</summary>
 
-```
+<br/>
+
+Greyjoy uses `vim.ui.select` and built-in terminal/buffers but integration with a few plugins are available but requires dependencies
+
+|Plugin|
+|--- |
+|[Toggleterm](https://github.com/akinsho/toggleterm.nvim)|
+|[Telescope](https://github.com/nvim-telescope/telescope.nvim)|
+|[Fzf-lua](https://github.com/ibhagwan/fzf-lua)|
+
+Available when installed.
+
+</details>
+
+## ⚙️ Configuration
+
+<details><summary>Default options</summary>
+
+<br/>
+
+```lua
 {
   ui = {
     buffer = { -- width and height for the buffer output
@@ -133,16 +109,20 @@ So in the above example its possible to run the generic and makefile plugin by r
   show_command = false, -- show command to run in menu
   show_command_in_output = true, -- show command that was just executed in output
   patterns = {".git", ".svn"}, -- patterns to find the root of the project
-  output_result = "buffer", -- buffer or to toggleterm
-  extensions = {}, -- no extensions are loaded per default
-  run_groups = {}, -- no groups configured per default
-  overrides = {}, -- make global overrides
+  output_result = require("greyjoy.terminals").buffer,
+  extensions = {}, -- extensions configurations
+  run_groups = {}, -- See `Run groups`
+  overrides = {}, -- Stores internal overrides of commands
 }
 ```
 
-Per default all plugins use the same terminal but this behaviour (if you are using `toggleterm`) can be overridden by either grouping the plugins to a specific `group_id` or create a function to assign number based on plugin name.
+Per default all plugins use the same terminal/buffer but this behaviour can be overridden if you are using `toggleterm`.
 
-So if you want all plugins to run under id `id` (default) but the `docker_compose` you would like to have another group you can configure it via
+Toggleterm supports multiple terminals so you can group extensions into having different terminal.
+
+Specify `group_id` or create a function to assign number based on plugin name.
+
+So if you want all extensions to run under `id` 1 (default) but the `docker_compose` you would like to have another group you can configure it via
 
 ```
   extensions = {
@@ -150,13 +130,114 @@ So if you want all plugins to run under id `id` (default) but the `docker_compos
   },
 ```
 
-and now all docker compose's exec is running in a secondary terminal (group_id 2) and all the others in group_id 1
+Now all docker compose's exec is running in a secondary terminal (group_id 2) and all the others in group_id 1
 
-## Extensions
+### 🫂 Run groups
 
-Default `greyjoy` does not have any extensions enabled.
+Some extension can be slow or not always required so its possible to group extensions into groups.
 
-### Generic
+```lua
+{
+	...
+     run_groups = { fast = { "generic", "makefile", "cargo", "docker_compose" } },
+	...
+}
+```
+
+Invoking `:Greyjoy fast` now only runs the defined extensions.
+
+### 🪝 Hooks
+
+Hooks can be invoked before and after a command and no default ones are defined.
+
+An example of running a target via a makefile can put the errors in the quickfix list just like running it via the `:make`:
+
+```lua
+return {
+    "desdic/greyjoy.nvim",
+    keys = {
+        { "<leader>gr", "<cmd>Greyjoy<CR>", desc = "[G]reyjoy [r]un" },
+    },
+    cmd = { "Greyjoy", "Greyedit", "GreyjoyRunLast" },
+    config = function()
+        local greyjoy = require("greyjoy")
+
+        local tmpmakename = nil
+
+        local pre_make = function(command)
+            tmpmakename = os.tmpname()
+            table.insert(command.command, "2>&1")
+            table.insert(command.command, "|")
+            table.insert(command.command, "tee")
+            table.insert(command.command, tmpmakename)
+        end
+
+        -- A bit hacky solution to checking when tee has flushed its file
+        local post_make = function()
+            vim.cmd(":cexpr []")
+            local cmd = { "inotifywait", "-e", "close_write", tmpmakename }
+
+            local job_id = vim.fn.jobstart(cmd, {
+                stdout_buffered = true,
+                on_exit = function(_, _, _)
+                    if tmpmakename ~= nil then
+                        vim.cmd(":cgetfile " .. tmpmakename)
+                        os.remove(tmpmakename)
+                    end
+                end,
+            })
+
+            if job_id <= 0 then
+                vim.notify("Failed to start inotifywait!")
+            end
+        end
+
+        greyjoy.setup({
+            ui = {
+                term = {
+                    height = 10,
+                },
+            },
+            output_results = require("greyjoy.terminals").term,
+            extensions = {
+                makefile = {
+                    pre_hook = pre_make,
+                    post_hook = post_make,
+                },
+            }
+        })
+
+        greyjoy.load_extension("makefile")
+    end,
+}
+```
+
+</details>
+
+
+## ✨ Extensions
+<a id="extensions"></a>
+
+Two types of extensions are currently supported. `global` always runs and `file` will only run on specific files being present.
+
+<!-- toc:start -->
+
+| Plugin | Type | Description |
+| ----- | --- | :--- |
+| [Generic](#generic) | global |Handles condition based running of commands  |
+| [File](#file) | global |Handles running command bases on configuration file per project  |
+| [Makefile](#makefile) | file | Parses makefile and lists targets and runable  |
+| [vscode_tasks](#vscode_tasks) | file | Parses vscode tasks file  |
+| [kitchen](#kitchen) | file | Handles kitchen targets  |
+| [cargo](#cargo) | file | Gives a default run list when `Cargo.toml` is available |
+| [docker_compose](#docker_compose) | file | List docker compose targets as runable  |
+
+<!-- toc:end -->
+
+<details><summary>Generic extension</summary>
+<a id="generic"></a>
+
+### Generic extension
 
 `generic` extension is a global module that does not take into account if we are in a project (found via the patterns). Commands to run can be matched using `filetype`, `filename`, `filepath`
 
@@ -165,17 +246,17 @@ Example:
 generic = {
   commands = {
     ["run {filename}"] = {
-      command = {"python3", "{filename}"},
-      filetype = "python",
+      command = {"python3 {filename}"}, -- can be a single string or multiple but is still a single command
+      filetype = "python", -- only runs if filetype is python and filename is test.py
       filename = "test.py"
     },
     ["run {filename}"] = {
       command = {"go", "run", "{filename}"},
-      filetype = "go"
+      filetype = "go" -- run if filetype is go
     },
     ["cmake --build target"] = {
         command = { "cd", "{rootdir}", "&&", "cmake", "--build", "{rootdir}/target" },
-        condition = function(n)
+        condition = function(n) -- custom conditions can be added
             return condition.file_exists("CMakeLists.txt", n)
                 and condition.directory_exists("target", n)
         end,
@@ -191,22 +272,14 @@ generic = {
   }
 },
 ```
+</details>
 
-The generic module can substitute current variables
+<details><summary>File extension</summary>
+<a id="file"></a>
 
-| variable | expands to |
-| :--- | :--- |
-| {filename} | current filename |
-| {filepath} | path of current file |
-| {rootdir} | path of root (containing patterns like .git) |
+### File extension
 
-The above example is only triggered if a file is of type `python` and the filename matches `test.py`
-
-
-
-### File
-
-`file` extension is a global module that only reads a config (default greyjoy.json) from within your project
+`file` extension is a global module that only reads `greyjoy.json` (can be changed) from within your project
 
 Example configuration:
 ```
@@ -214,60 +287,139 @@ file = {
   filename = "myrunner.json"
 },
 ```
-
-The file module can substitute current variables
-
-| variable | expands to |
-| :--- | :--- |
-| {filename} | current filename |
-| {filepath} | path of current file |
-| {rootdir} | path of root (containing patterns like .git) |
-
-The configuration file is a simple key value
+The configuration file is a simple key value. Value can be a string or an array (same result).
 
 ```json
 {
-  "build all": ["make build"],
+  "build all": ["make", "build"],
   "do cleanup": "make clean"
 }
 
 ```
 
-### Makefile
+</details>
 
-The `makefile` extension is filebased and will only trigger if a `Makefile` is located in the project root. It finds all targets for a `Makefile`.
+<details><summary>Makefile extension</summary>
+<a id="makefile"></a>
 
-requires `make` and `awk` to work.
+### Makefile extension
 
-### Vscode_tasks
+The `makefile` extension is file based and will only trigger if a `Makefile` is located in the project root. It finds all targets for a `Makefile`.
 
-The `vscode_tasks` extension is filebased and will only trigger if `.vscode/tasks.json` exists in the project root
+> [!important]
+> requires `make` and `awk` to work.
 
-### Kitchen
+</details>
 
-The `kitchen` extension is also filebased and looks for `.kitchen.yml` and requires `kitchen` (from chefdk or cinc-workstation) + `awk` to be installed.
+<details><summary>Vscode_tasks extension</summary>
+<a id="vscode_tasks"></a>
+<br/>
 
-NOTICE: kitchen is quite slow so its possible to create a group without it and only use it when needed
+### Vscode_tasks extension
 
-### Cargo
+The `vscode_tasks` extension is file based and will only trigger if `.vscode/tasks.json` exists in the project root
+</details>
 
-The `cargo` extension is filebased and looks for `Cargo.toml` and requires `cargo`
+<details><summary>Kitchen extension</summary>
+<a id="kitchen"></a>
 
-### Docker_compose
+### Kitchen extension
 
-The `docker_compose` extension is filebased and looks for `docker-compose.yml` and requires `docker-compose`/`docker compose`
+> [!important]
+> requires `kitchen` and `awk` to work.
 
-## Documentation
+> [!tip]
+> kitchen is quite slow so its possible to create a group without it and only use it when needed.
 
-Full configuration options and examples can be found in the [documentation](doc/greyjoy.txt)
+The `kitchen` extension is also file based and looks for `.kitchen.yml` (chefdk or cinc-workstation).
 
-## Checkhealth
+This extension can be configured to only include specific targets
 
-Once installed make sure you run `:checkhealth greyjoy` to ensure its set up correctly.
+```lua
+extensions = {
+    kitchen = {
+        targets = { "converge", "verify", "destroy", "test", "login" },
+        include_all = false,
+    }
+}
+```
 
-## Breaking changes
+</details>
 
-Breaking changes will be announced in this [Github Issue](https://github.com/desdic/greyjoy.nvim/issues/1)
+<details><summary>Cargo extension</summary>
+<a id="cargo"></a>
+
+### Cargo extension
+
+The `cargo` extension is file based and looks for `Cargo.toml` and requires `cargo`
+
+> [!important]
+> requires `cargo`.
+
+</details>
+
+<details><summary>Docker_compose extension</summary>
+<a id="docker_compose"></a>
+<br/>
+
+### Docker_compose extension
+
+The `docker_compose` extension is file based and looks for `docker-compose.yml`.
+
+> [!important]
+> requires `docker-compose` or `docker compose`.
+
+</details>
+
+## 🧩 Variables
+
+Simple substitutions can be use to make more specific runners
+
+| variable | expands to |
+| :--- | :--- |
+| {filename} | current filename |
+| {filepath} | path of current file |
+| {rootdir} | path of root (configured via patterns in config)  |
+
+## 🤝 Helper functions
+
+<details><summary>🤳 Conditions</summary> 
+<a id="conditions"></a>
+
+Condition functions can be applied to the `generic` extension in case the built-in isn't enough.
+
+<!-- toc:start -->
+
+| Function | Description |
+| :--- | :--- |
+| require("greyjoy.conditions").file_exists | Check if file exists |
+| require("greyjoy.conditions").directory_exists | Check if directory exists |
+
+<!-- toc:end -->
+
+</details>
+
+<details><summary>🖥️ Terminal/Buffers</summary>
+<a id="terminals"></a>
+<br/>
+
+Displaying the output of a command is based on the function defined in `output_result`. Default it just outputs to a buffer but you can write a function for your custom need.
+
+<!-- toc:start -->
+
+| Function | Description |
+| :--- | :--- |
+| require("greyjoy.terminals").buffer | Default, outputs into a buffer |
+| require("greyjoy.terminals").term | Opens a terminal in the bottom |
+| require("greyjoy.terminals").toggleterm | Use toggleterm (requires [toggleterm](https://github.com/akinsho/toggleterm.nvim)) |
+
+<!-- toc:end -->
+
+</details>
+
+## 📚 Documentation
+
+Documentation and a more comprehensive example can be found in the [documentation](doc/greyjoy.txt)
 
 ## Development
 
@@ -284,9 +436,9 @@ example:
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 
-## Thank you / shout-outs
+## Thank you / shout outs
 
-* The extension in this module is heavily inspired by the manager in [Telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)
+* The extension manager is heavily inspired by the manager in [Telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)
 
 ## Credits
 
