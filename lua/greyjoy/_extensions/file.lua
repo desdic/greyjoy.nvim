@@ -56,6 +56,8 @@ local compile_commands = function(data, filepath, fileobj)
             command = command,
             path = filepath,
             plugin = "file",
+            pre_hook = File.config.pre_hook or nil,
+            post_hook = File.config.post_hook or nil,
         })
     end
     return file_commands
