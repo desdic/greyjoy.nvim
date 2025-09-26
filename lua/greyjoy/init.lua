@@ -196,8 +196,8 @@ greyjoy.setup = function(options)
 
     -- easy index to do lookup later
     greyjoy.run_group_map = {}
-    if greyjoy.run_groups then
-        for group_name, group_plugins in pairs(greyjoy.run_groups) do
+    if greyjoy.config.run_groups then
+        for group_name, group_plugins in pairs(greyjoy.config.run_groups) do
             greyjoy.run_group_map[group_name] = greyjoy.run_group_map[group_name]
                 or {}
 
