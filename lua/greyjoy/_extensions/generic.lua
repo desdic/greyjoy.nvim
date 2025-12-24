@@ -101,7 +101,8 @@ end
 --- {filepath} is replaced with current filepath
 --- {rootdir} is the path for the root directory
 ---
---- Having multiple conditions like filetype and filename will do an `and` operation so both requirements has to be met before it triggers.
+--- Having multiple conditions like filetype and filename will do an `and` operation
+--- so both requirements has to be met before it triggers.
 --- Examples:
 ---     commands = {
 ---         ["run {filename}"] = {
