@@ -198,8 +198,7 @@ greyjoy.setup = function(options)
     greyjoy.run_group_map = {}
     if greyjoy.config.run_groups then
         for group_name, group_plugins in pairs(greyjoy.config.run_groups) do
-            greyjoy.run_group_map[group_name] = greyjoy.run_group_map[group_name]
-                or {}
+            greyjoy.run_group_map[group_name] = {}
 
             for index in ipairs(group_plugins) do
                 greyjoy.run_group_map[group_name][group_plugins[index]] = true

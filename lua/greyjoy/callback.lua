@@ -39,9 +39,8 @@ greycall.extensions = function(
             or pluginname == plugin
             or greyjoy.__in_group(pluginname, plugin)
         then
-            local output = {}
             if plugin_type == "global" then
-                output = plugin_obj.parse(fileobj)
+                local output = plugin_obj.parse(fileobj)
                 callback(output, callbackoptions)
             else
                 if rootdir then
@@ -51,7 +50,7 @@ greycall.extensions = function(
                                 filename = file,
                                 filepath = rootdir,
                             }
-                            output = plugin_obj.parse(fileinfo)
+                            local output = plugin_obj.parse(fileinfo)
                             callback(output, callbackoptions)
                         end
                     end

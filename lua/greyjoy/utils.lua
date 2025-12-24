@@ -67,7 +67,11 @@ M.new_file_obj = function(patterns, bufname, filetype)
         filepath = vim.uv.cwd()
     end
 
-    local rootdir = vim.fs.dirname(vim.fs.find(patterns, { upward = true })[1])
+    local rootdir_search = vim.fs.find(patterns, { upward = true })
+    local rootdir = nil
+    if rootdir_search and #rootdir_search > 0 then
+        rootdir = vim.fs.dirname(rootdir_search[1])
+    end
     rootdir = M.if_nil(rootdir, filepath)
 
     return {
