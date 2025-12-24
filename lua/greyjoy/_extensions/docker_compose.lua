@@ -25,15 +25,6 @@ if not ok then
     return
 end
 
-local uok, utils = pcall(require, "greyjoy.utils")
-if not uok then
-    vim.notify(
-        "This plugin requires greyjoy.nvim (https://github.com/desdic/greyjoy.nvim)",
-        vim.log.levels.ERROR({ title = "Plugin error" })
-    )
-    return
-end
-
 local health = vim.health
 
 local DockerCompose = {}
