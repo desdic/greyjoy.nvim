@@ -1,3 +1,4 @@
+-- luacheck: ignore 122
 local M = {}
 
 M.term = function(command, config)
